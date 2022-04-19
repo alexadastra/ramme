@@ -1,0 +1,11 @@
+name: ramme-template
+description: A Helm charts for Kubernetes application
+version: 0.0.3
+home: https://my.domain/
+sources:
+  - https://git.miem.hse.ru/786/ramme-template
+maintainers:
+  - name: Aleksey Semenchenko
+    email: aasemenchenko@edu.hse.ru
+engine: gotpl
+apiVersion: v2

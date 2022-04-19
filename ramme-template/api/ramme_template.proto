@@ -1,0 +1,23 @@
+syntax = "proto3";
+package ramme_template;
+option go_package = "pkg/api";
+
+import "google/api/annotations.proto";
+
+service RammeTemplateService {
+  rpc Ping(PingRequest) returns (PingResponse) {
+    option (google.api.http) = {
+      post: "/v1/ping"
+      body: "*"
+    };
+  }
+}
+
+message PingRequest {
+  string value = 1;
+}
+
+message PingResponse {
+  int64 code = 1;
+  string value = 2;
+}

@@ -5,7 +5,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-const (
+var (
 	// SERVICENAME contains a service name prefix which used in ENV variables
 	SERVICENAME = "RAMME-SERVICE-NAME"
 )

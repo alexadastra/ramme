@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "name" . }}
+  labels:
+    app: {{ template "fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Values.service.name }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+spec:
+  ports:
+  - port: {{ .Values.service.externalHTTPPort }}
+    targetPort: {{ .Values.service.internalHTTPPort }}
+    protocol: TCP
+    name: {{ .Values.service.name }}
+  - port: {{ .Values.service.externalHTTPSecondaryPort }}
+    targetPort: {{ .Values.service.internalHTTPSecondaryPort }}
+    protocol: TCP
+    name: {{ .Values.service.name }}-secondary
+  - port: {{ .Values.service.externalGRPCPort }}
+    targetPort: {{ .Values.service.internalGRPCPort }}
+    protocol: TCP
+    name: {{ .Values.service.name }}-grpc
+  selector:
+    app: {{ template "fullname" . }}
+  type: "{{ .Values.service.type }}"

@@ -2,6 +2,11 @@ module git.miem.hse.ru/786/ramme
 
 go 1.17
 
+replace (
+	git.miem.hse.ru/786/auth-service/pkg/api => ../auth-service/pkg/api
+	git.miem.hse.ru/786/ramme => ../ramme
+)
+
 require (
 	github.com/gorilla/mux v1.8.0
 	github.com/kelseyhightower/envconfig v1.4.0
