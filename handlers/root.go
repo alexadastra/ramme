@@ -14,7 +14,7 @@ import (
 func (h *Handler) Root(w http.ResponseWriter, _ *http.Request) (int, error) {
 	w.WriteHeader(http.StatusOK)
 	info := make(map[string]string)
-	info["service"] = config.SERVICENAME
+	info["service"] = config.ServiceName
 	info["version"] = version.RELEASE
 
 	resp, err := json.Marshal(info)

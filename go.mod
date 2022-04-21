@@ -9,13 +9,15 @@ replace (
 
 require (
 	github.com/gorilla/mux v1.8.0
-	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xlog v0.0.0-20171227185259-131980fab91b
 	github.com/sirupsen/logrus v1.8.1
+	gopkg.in/fsnotify.v1 v1.4.7
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
+	github.com/fsnotify/fsnotify v1.5.2 // indirect
 	github.com/justinas/alice v1.2.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/rs/xhandler v0.0.0-20170707052532-1eb70cf1520d // indirect

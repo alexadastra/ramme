@@ -1,30 +1,41 @@
 package config
 
 import (
-	"git.miem.hse.ru/786/ramme/logger"
-	"github.com/kelseyhightower/envconfig"
+	"io/ioutil"
+	"log"
+	"path/filepath"
+	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
-var (
-	// SERVICENAME contains a service name prefix which used in ENV variables
-	SERVICENAME = "RAMME-SERVICE-NAME"
-)
+// InitConfig inits config
+func InitConfig() (Manager, func(), error) {
+	//ServiceName = "RAMME-TEMPLATE"
+	confManager := NewMutexConfigManager(LoadConfig(File))
 
-// Config contains ENV variables
-type Config struct {
-	// Local service host
-	Host string `split_words:"true"`
-	// Local service GRPC port
-	GRPCPort int `split_words:"true"`
-	// Local service HTTP port
-	HTTPPort int `split_words:"true"`
-	// Local secondary service HTTP port (for monitoring, tracing, health/readiness check etc.)
-	HTTPSecondaryPort int `split_words:"true"`
-	// Logging level in logger.Level notation
-	LogLevel logger.Level `split_words:"true"`
+	// Watch the file for modification and update the config manager with the new config when it's available
+	watcher, err := WatchFile(File, time.Second, func() {
+		conf := LoadConfig(File)
+		confManager.Set(conf)
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	return confManager, func() { watcher.Close() }, nil
 }
 
-// Load settles ENV variables into Config structure
-func (c *Config) Load(serviceName string) error {
-	return envconfig.Process(serviceName, c)
+// LoadConfig loads config from file loader
+func LoadConfig(configFile string) *Config {
+	conf := &Config{}
+	configData, err := ioutil.ReadFile(filepath.Clean(configFile))
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	err = yaml.Unmarshal(configData, conf)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	return conf
 }

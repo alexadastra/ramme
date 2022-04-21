@@ -14,7 +14,7 @@ const UTC = "+0000 UTC "
 // New returns logger that is compatible with the Logger interface
 func New(cfg *logger.Config) logger.Logger {
 	var flags int
-	prefix := "[" + config.SERVICENAME + ":" + cfg.Level.String() + "] "
+	prefix := "[" + config.ServiceName + ":" + cfg.Level.String() + "] "
 	if cfg.Out == nil {
 		cfg.Out = os.Stdout
 	}
@@ -159,9 +159,9 @@ func (l *stdLogger) printfErr(format string, v ...interface{}) {
 }
 
 func (l *stdLogger) setStdPrefix(level logger.Level) {
-	l.stdlog.SetPrefix("[" + config.SERVICENAME + ":" + level.String() + "] ")
+	l.stdlog.SetPrefix("[" + config.ServiceName + ":" + level.String() + "] ")
 }
 
 func (l *stdLogger) setErrPrefix(level logger.Level) {
-	l.errlog.SetPrefix("[" + config.SERVICENAME + ":" + level.String() + "] ")
+	l.errlog.SetPrefix("[" + config.ServiceName + ":" + level.String() + "] ")
 }

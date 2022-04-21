@@ -49,6 +49,13 @@ spec:
             port: {{ .Values.service.internalHTTPSecondaryPort }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ .Chart.Name }}-configmap
       terminationGracePeriodSeconds: {{ .Values.gracePeriod }}
       imagePullSecrets:
         - name: gitlab-auth

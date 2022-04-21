@@ -175,7 +175,10 @@ generate:
 	docker-compose -f docker-compose.yml up
 	sudo cp -r ./pkg/api/pkg/api/* ./pkg/api
 	sudo rm -rf pkg/api/pkg
-	sudo mv ./pkg/api/*.json ./internal/swagger
+	sudo mv ./pkg/api/${APP}.swagger.json ./internal/swagger
 	sudo chmod -R 777 ./pkg/api
-	sudo chmod -R 777 ./internal/swagger
-	sed -i 's/v1/${NAMESPACE}\/${APP}\/v1/g' ./internal/swagger/*.json
+	sudo chmod -R 777 ./internal/swagger/${APP}.swagger.json
+	cd ./internal/swagger && cp ./${APP}.swagger.json ./${APP}.swagger.local.json
+	cd ./internal/swagger && mv ./${APP}.swagger.json ./${APP}.swagger.k8s.json
+	cd ./internal/swagger && sed -i 's/v1/${NAMESPACE}\/${APP}\/v1/g' ./${APP}.swagger.k8s.json
+	cd ./pkg/api && go mod init ${PROJECT}/pkg/api && go mod tidy

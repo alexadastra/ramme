@@ -1,0 +1,12 @@
+{{- $namespace := .Release.Namespace -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-configmap
+  namespace: {{ $namespace }}
+data:
+  {{- $files := .Files }}
+  {{- range tuple "config.yaml"}}
+  {{ . }}: |-
+        {{ $files.Get . }}
+  {{- end }}

@@ -13,7 +13,7 @@ import (
 )
 
 func TestInfo(t *testing.T) {
-	h := New(standard.New(&logger.Config{}), new(config.Config))
+	h := New(standard.New(&logger.Config{}), new(config.BasicConfig))
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(h.Info)(w, r)
 	})

@@ -11,7 +11,7 @@ import (
 // Handler defines common part for all handlers
 type Handler struct {
 	logger      logger.Logger
-	config      *config.Config
+	config      *config.BasicConfig
 	maintenance bool
 	stats       *stats
 }
@@ -26,7 +26,7 @@ type stats struct {
 }
 
 // New returns new instance of the Handler
-func New(logger logger.Logger, config *config.Config) *Handler {
+func New(logger logger.Logger, config *config.BasicConfig) *Handler {
 	return &Handler{
 		logger: logger,
 		config: config,

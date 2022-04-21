@@ -69,7 +69,7 @@ func logMessageFormatted(level logger.Level, format, message string, out, err *b
 
 func testOutput(t *testing.T, level logger.Level, message string, formatted bool) {
 	var want string
-	prefix := "[" + config.SERVICENAME + ":" + level.String() + "] "
+	prefix := "[" + config.ServiceName + ":" + level.String() + "] "
 	out := &bytes.Buffer{}
 	err := &bytes.Buffer{}
 	if formatted {
@@ -186,7 +186,7 @@ func TestLevel(t *testing.T) {
 }
 
 func testOutputWithTime(t *testing.T, level logger.Level, message string) {
-	prefix := "[" + config.SERVICENAME + ":" + level.String() + "] "
+	prefix := "[" + config.ServiceName + ":" + level.String() + "] "
 	want := prefix + "__TIME__ " + UTC + message + "\n"
 	out := &bytes.Buffer{}
 	err := &bytes.Buffer{}
@@ -205,7 +205,7 @@ func testOutputWithTime(t *testing.T, level logger.Level, message string) {
 }
 
 func testOutputFormattedWithTime(t *testing.T, level logger.Level, message string) {
-	prefix := "[" + config.SERVICENAME + ":" + level.String() + "] "
+	prefix := "[" + config.ServiceName + ":" + level.String() + "] "
 	want := prefix + "__TIME__ " + UTC + message + "\n"
 	out := &bytes.Buffer{}
 	err := &bytes.Buffer{}

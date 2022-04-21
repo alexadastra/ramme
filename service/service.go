@@ -16,7 +16,7 @@ import (
 )
 
 // Setup configures the service
-func Setup(cfg *config.Config) (*mux.Router, logger.Logger, error) {
+func Setup(cfg *config.BasicConfig) (*mux.Router, logger.Logger, error) {
 	// Setup logger
 	l := stdlog.New(&logger.Config{
 		Level: cfg.LogLevel,
@@ -26,7 +26,7 @@ func Setup(cfg *config.Config) (*mux.Router, logger.Logger, error) {
 
 	l.Info("Version:", version.RELEASE)
 	l.Warnf("%s log level is used", logger.LevelDebug.String())
-	l.Infof("Service %s listens secondary requests on %s:%d", config.SERVICENAME, cfg.Host, cfg.HTTPSecondaryPort)
+	l.Infof("Service %s listens secondary requests on %s:%d", config.ServiceName, cfg.Host, cfg.HTTPSecondaryPort)
 
 	// Define handlers
 	h := handlers.New(l, cfg)

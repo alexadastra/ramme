@@ -12,11 +12,11 @@ import (
 )
 
 func TestRoot(t *testing.T) {
-	h := New(standard.New(&logger.Config{}), new(config.Config))
+	h := New(standard.New(&logger.Config{}), new(config.BasicConfig))
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(h.Root)(w, r)
 	})
 
 	testHandler(t, handler, http.StatusOK,
-		fmt.Sprintf("{\"service\":\"%s\",\"version\":\"%s\"}", config.SERVICENAME, version.RELEASE))
+		fmt.Sprintf("{\"service\":\"%s\",\"version\":\"%s\"}", config.ServiceName, version.RELEASE))
 }

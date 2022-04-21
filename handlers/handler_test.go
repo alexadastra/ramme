@@ -11,7 +11,7 @@ import (
 )
 
 func TestCollectCodes(t *testing.T) {
-	h := New(standard.New(&logger.Config{}), new(config.Config))
+	h := New(standard.New(&logger.Config{}), new(config.BasicConfig))
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(func(w http.ResponseWriter, r *http.Request) (int, error) {
 			w.WriteHeader(http.StatusBadGateway)

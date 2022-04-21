@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"time"
@@ -24,14 +23,14 @@ import (
 
 func main() {
 	// Load ENV configuration
-	cfg := new(config.Config)
-	config.SERVICENAME = "RAMME-TEMPLATE"
-	if err := cfg.Load(config.SERVICENAME); err != nil {
-		log.Fatal(err)
+	confManager, closeFunc, err := config.InitConfig()
+	if err != nil {
+		panic(err)
 	}
-
+	defer closeFunc()
+	cfg := confManager.Get()
 	// Configure service and get router
-	router, logger, err := service.Setup(cfg)
+	router, logger, err := service.Setup(&cfg.Basic)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -58,7 +57,7 @@ func main() {
 	// Listen and serve handlers
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPSecondaryPort),
+		Addr:         fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.HTTPSecondaryPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
@@ -66,23 +65,23 @@ func main() {
 	// Serve
 	g := system.NewGroupOperator()
 
-	grpcListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
+	grpcListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.GRPCPort))
 	if err != nil {
 		logger.Fatal(err)
 	}
 	g.Add(func() error {
-		logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
+		logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.GRPCPort))
 		return baseGrpcServer.Serve(grpcListener)
 	}, func(error) {
 		grpcListener.Close()
 	})
 
-	httpListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPPort))
+	httpListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.HTTPPort))
 	if err != nil {
 		logger.Fatal(err)
 	}
 	g.Add(func() error {
-		logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPPort))
+		logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.HTTPPort))
 		return http.Serve(httpListener, mux)
 	},
 		func(err error) {
