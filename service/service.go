@@ -25,7 +25,7 @@ func Setup(cfg *config.BasicConfig) (*mux.Router, logger.Logger, error) {
 	})
 
 	l.Info("Version:", version.RELEASE)
-	l.Warnf("%s log level is used", logger.LevelDebug.String())
+	l.Warnf("%s log level is used", cfg.LogLevel.String())
 	l.Infof("Service %s listens secondary requests on %s:%d", config.ServiceName, cfg.Host, cfg.HTTPSecondaryPort)
 
 	// Define handlers

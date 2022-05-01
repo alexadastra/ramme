@@ -11,16 +11,21 @@ import (
 )
 
 func TestSetup(t *testing.T) {
-	confManager, closeFunc, err := config.InitConfig()
+	confManager, watcher, err := config.InitBasicConfig()
 	if err != nil {
 		panic(err)
 	}
-	defer closeFunc()
-	cfg := confManager.Get()
+	go func() {
+		_ = watcher.Run()
+	}()
+	defer func(watcher *config.FileWatcher) {
+		_ = watcher.Close()
+	}(watcher)
+	cfg := confManager.GetBasic()
 	if err != nil {
 		t.Error("Expected loading of environment vars, got", err)
 	}
-	router, logger, err := Setup(&cfg.Basic)
+	router, logger, err := Setup(cfg)
 	if err != nil {
 		t.Errorf("Fail, got '%s', want '%v'", err, nil)
 	}
@@ -31,7 +36,7 @@ func TestSetup(t *testing.T) {
 		t.Error("Expected new logger, got nil")
 	}
 
-	h := handlers.New(logger, &cfg.Basic)
+	h := handlers.New(logger, cfg)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(notFound)(w, r)
 	})

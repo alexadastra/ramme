@@ -1,34 +1,43 @@
 package config
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/pkg/errors"
+)
 
 // Manager is a simple interface that allows us to switch out both manager implementations
 type Manager interface {
-	Set(*Config)
-	Get() *Config
+	Set([]byte) error
+	GetBasic() *BasicConfig
 	Close()
 }
 
 // MutexConfigManager manages the configuration instance by preforming locking around access to the Config struct.
 type MutexConfigManager struct {
-	conf  *Config
+	conf  *BasicConfig
 	mutex *sync.Mutex
 }
 
 // NewMutexConfigManager constructs new MutexConfigManager
-func NewMutexConfigManager(conf *Config) *MutexConfigManager {
+func NewMutexConfigManager(conf *BasicConfig) Manager {
 	return &MutexConfigManager{conf, &sync.Mutex{}}
 }
 
 // Set sets new config
-func (m *MutexConfigManager) Set(conf *Config) {
+func (m *MutexConfigManager) Set(configData []byte) error {
+	conf, err := UnmarshalConfig(configData)
+	if err != nil {
+		return errors.Wrap(err, "failed to load file")
+	}
 	m.mutex.Lock()
-	m.conf = conf
+	m.conf = &conf.Basic
 	m.mutex.Unlock()
+	return nil
 }
 
-// Get returns current config
-func (m *MutexConfigManager) Get() *Config {
+// GetBasic returns current config
+func (m *MutexConfigManager) GetBasic() *BasicConfig {
 	m.mutex.Lock()
 	temp := m.conf
 	m.mutex.Unlock()
@@ -36,24 +45,27 @@ func (m *MutexConfigManager) Get() *Config {
 }
 
 // Close shuts manager down
-func (m *MutexConfigManager) Close() {
-	//Do Nothing
-}
+func (m *MutexConfigManager) Close() {}
 
 // ChannelConfigManager manages the configuration instance by feeding a
 //pointer through a channel whenever the user calls Get()
 type ChannelConfigManager struct {
-	conf *Config
-	get  chan *Config
-	set  chan *Config
+	conf *BasicConfig
+	get  chan *BasicConfig
+	set  chan *BasicConfig
 	done chan bool
 }
 
 // NewChannelConfigManager constructs new ChannelConfigManager
-func NewChannelConfigManager(conf *Config) *ChannelConfigManager {
-	parser := &ChannelConfigManager{conf, make(chan *Config), make(chan *Config), make(chan bool)}
-	parser.Start()
-	return parser
+func NewChannelConfigManager(conf *BasicConfig) Manager {
+	manager := &ChannelConfigManager{
+		conf,
+		make(chan *BasicConfig),
+		make(chan *BasicConfig),
+		make(chan bool),
+	}
+	manager.Start()
+	return manager
 }
 
 // Start starts goroutine listening to file changes
@@ -82,11 +94,16 @@ func (m *ChannelConfigManager) Close() {
 }
 
 // Set sets new config
-func (m *ChannelConfigManager) Set(conf *Config) {
-	m.set <- conf
+func (m *ChannelConfigManager) Set(configData []byte) error {
+	conf, err := UnmarshalConfig(configData)
+	if err != nil {
+		return errors.Wrap(err, "failed to load file")
+	}
+	m.set <- &conf.Basic
+	return nil
 }
 
-// Get returns current config
-func (m *ChannelConfigManager) Get() *Config {
+// GetBasic returns current config
+func (m *ChannelConfigManager) GetBasic() *BasicConfig {
 	return <-m.get
 }

@@ -7,6 +7,5 @@ metadata:
 data:
   {{- $files := .Files }}
   {{- range tuple "config.yaml"}}
-  {{ . }}: |-
-        {{ $files.Get . }}
+  {{ . }}: {{ toYaml ($files.Get .) | indent 2}}
   {{- end }}

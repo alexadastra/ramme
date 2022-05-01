@@ -11,8 +11,7 @@ var (
 
 // Config is the struct that holds our application's configuration
 type Config struct {
-	Basic    BasicConfig    `yaml:"basic"`
-	Advanced AdvancedConfig `yaml:"advanced"`
+	Basic BasicConfig `yaml:"basic"`
 }
 
 // BasicConfig holds basic application's configuration
@@ -29,9 +28,4 @@ type BasicConfig struct {
 	LogLevel logger.Level `split_words:"true" yaml:"log_level"`
 	// is local environment
 	IsLocalEnvironment bool `split_words:"true" yaml:"is_local_environment"`
-}
-
-// AdvancedConfig holds specific application's configuration
-type AdvancedConfig struct {
-	PingMessage string `yaml:"ping_message"`
 }

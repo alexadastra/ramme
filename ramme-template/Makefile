@@ -8,12 +8,6 @@ RELEASE?=0.0.3
 GOOS?=linux
 GOARCH?=amd64
 
-RAMME-TEMPLATE_HOST?=0.0.0.0
-RAMME-TEMPLATE_HTTP_PORT?=8080
-RAMME-TEMPLATE_HTTP_SECONDARY_PORT?=8081
-RAMME-TEMPLATE_GRPC_PORT?=6560
-RAMME-TEMPLATE_LOG_LEVEL?=0
-
 # Namespace: dev, prod, release, cte, username ...
 NAMESPACE?=default
 
@@ -66,12 +60,9 @@ push: build
 .PHONY: run
 run: build
 	@echo "+ $@"
-	@docker run --name ${CONTAINER_NAME} -p ${RAMME-TEMPLATE_HTTP_PORT}:${RAMME-TEMPLATE_HTTP_PORT} -p ${RAMME-TEMPLATE_HTTP_SECONDARY_PORT}:${RAMME-TEMPLATE_HTTP_SECONDARY_PORT} -p ${RAMME-TEMPLATE_GRPC_PORT}:${RAMME-TEMPLATE_GRPC_PORT} \
-		-e "RAMME-TEMPLATE_HOST=${RAMME-TEMPLATE_HOST}" \
-		-e "RAMME-TEMPLATE_HTTP_PORT=${RAMME-TEMPLATE_HTTP_PORT}" \
-		-e "RAMME-TEMPLATE_HTTP_SECONDARY_PORT=${RAMME-TEMPLATE_HTTP_SECONDARY_PORT}" \
-		-e "RAMME-TEMPLATE_GRPC_PORT=${RAMME-TEMPLATE_GRPC_PORT}" \
-		-e "RAMME-TEMPLATE_LOG_LEVEL=${RAMME-TEMPLATE_LOG_LEVEL}" \
+	@docker run --name ${CONTAINER_NAME} -p ${FRONTEND-GATEWAY_HTTP_PORT}:${FRONTEND-GATEWAY_HTTP_PORT} \
+		-p ${FRONTEND-GATEWAY_HTTP_SECONDARY_PORT}:${FRONTEND-GATEWAY_HTTP_SECONDARY_PORT} \
+		-p ${FRONTEND-GATEWAY_GRPC_PORT}:${FRONTEND-GATEWAY_GRPC_PORT} \
 		-d $(CONTAINER_IMAGE):$(RELEASE)
 	@sleep 1
 	@docker logs ${CONTAINER_NAME}
@@ -105,12 +96,36 @@ endif
 
 .PHONY: deploy
 deploy: push
+	@echo "+ $@"
 	helm upgrade ${CONTAINER_NAME} -f charts/${VALUES}.yaml charts --kube-context ${INFRASTRUCTURE} --namespace ${NAMESPACE} --version=${RELEASE} --install --wait --debug
 
-.PHONY: kube_clean
-kube_clean:
-	kubectl delete -n ${NAMESPACE} deployment ${APP}
+HAS_DEPLOYMENT := $(shell kubectl get deployments | grep ${APP})
+HAS_SERVICE := $(shell kubectl get services | grep ${APP})
+HAS_CONFIGMAP := $(shell kubectl get deployments | grep ${APP})
+
+.PHONY: delete_service
+delete_service:
+ifdef HAS_SERVICE
+	@echo "+ $@"
 	kubectl delete -n ${NAMESPACE} service ${APP}
+endif
+
+.PHONY: delete_deployment
+delete_deployment:
+ifdef HAS_DEPLOYMENT
+	@echo "+ $@"
+	kubectl delete -n ${NAMESPACE} deployment ${APP}
+endif
+
+.PHONY: delete_configmap
+delete_configmap:
+ifdef HAS_CONFIGMAP
+	@echo "+ $@"
+	kubectl delete -n ${NAMESPACE} configmap ${APP}-configmap
+endif
+
+.PHONY: kube_clean
+kube_clean: delete_service delete_deployment delete_configmap
 
 GO_LIST_FILES=$(shell go list ${PROJECT}/...)
 

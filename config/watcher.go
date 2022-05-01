@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/pkg/errors"
+
 	"gopkg.in/fsnotify.v1"
 )
 
@@ -13,11 +15,11 @@ type FileWatcher struct {
 	fsNotify *fsnotify.Watcher
 	interval time.Duration
 	done     chan struct{}
-	callback func()
+	callback func() error
 }
 
 // WatchFile begins watching a file with a specific interval and action
-func WatchFile(path string, interval time.Duration, action func()) (*FileWatcher, error) {
+func WatchFile(path string, interval time.Duration, action func() error) (*FileWatcher, error) {
 	fsWatcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, err
@@ -32,13 +34,12 @@ func WatchFile(path string, interval time.Duration, action func()) (*FileWatcher
 		make(chan struct{}, 1),
 		action,
 	}
-	// Launch a go thread to watch the file
-	go watcher.run()
 
-	return watcher, err
+	return watcher, nil
 }
 
-func (w *FileWatcher) run() {
+// Run runs loop for checking for file change
+func (w *FileWatcher) Run() error {
 	// Check for write events at this interval
 	tick := time.NewTicker(w.interval)
 
@@ -78,7 +79,9 @@ func (w *FileWatcher) run() {
 				continue
 			}
 			// Execute the callback
-			w.callback()
+			if err := w.callback(); err != nil {
+				return errors.Wrap(err, "failed to perform callback")
+			}
 			// Reset the last event
 			lastWriteEvent = nil
 		case <-w.done:
@@ -87,10 +90,12 @@ func (w *FileWatcher) run() {
 	}
 Close:
 	close(w.done)
+	return nil
 }
 
 // Close shuts watcher down
-func (w *FileWatcher) Close() {
-	w.done <- struct{}{}
-	w.fsNotify.Close()
+func (w *FileWatcher) Close() error {
+	// FIXME: this causes panic by SIGTERM
+	// w.done <- struct{}{}
+	return w.fsNotify.Close()
 }

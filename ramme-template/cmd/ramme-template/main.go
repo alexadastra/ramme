@@ -13,6 +13,7 @@ import (
 	"git.miem.hse.ru/786/ramme/service"
 	"git.miem.hse.ru/786/ramme/system"
 
+	advanced "git.miem.hse.ru/786/ramme-template/internal/config"
 	"git.miem.hse.ru/786/ramme-template/internal/swagger"
 
 	"git.miem.hse.ru/786/ramme-template/pkg/api"
@@ -23,17 +24,26 @@ import (
 
 func main() {
 	// Load ENV configuration
-	confManager, closeFunc, err := config.InitConfig()
+	confManager, confWatcher, err := config.InitBasicConfig()
 	if err != nil {
 		panic(err)
 	}
-	defer closeFunc()
-	cfg := confManager.Get()
+	cfg := confManager.GetBasic()
+
+	advancedConfManager, advancedConfWatcher, err := advanced.InitAdvancedConfig()
+	if err != nil {
+		panic(err)
+	}
+	advancedConfig := advancedConfManager.Get()
+
 	// Configure service and get router
-	router, logger, err := service.Setup(&cfg.Basic)
+	router, logger, err := service.Setup(cfg)
 	if err != nil {
 		logger.Fatal(err)
 	}
+
+	// TODO: figure out how to use advanced config
+	logger.Info(advancedConfig)
 
 	// Setup gRPC servers.
 	baseGrpcServer := grpc.NewServer()
@@ -57,7 +67,7 @@ func main() {
 	// Listen and serve handlers
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.HTTPSecondaryPort),
+		Addr:         fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPSecondaryPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
@@ -65,27 +75,38 @@ func main() {
 	// Serve
 	g := system.NewGroupOperator()
 
-	grpcListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.GRPCPort))
-	if err != nil {
-		logger.Fatal(err)
-	}
 	g.Add(func() error {
-		logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.GRPCPort))
-		return baseGrpcServer.Serve(grpcListener)
-	}, func(error) {
-		grpcListener.Close()
+		return confWatcher.Run()
+	}, func(err error) {
+		_ = confWatcher.Close()
+	})
+	g.Add(func() error {
+		return advancedConfWatcher.Run()
+	}, func(err error) {
+		_ = advancedConfWatcher.Close()
 	})
 
-	httpListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.HTTPPort))
+	grpcListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
 	if err != nil {
 		logger.Fatal(err)
 	}
 	g.Add(func() error {
-		logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", cfg.Basic.Host, cfg.Basic.HTTPPort))
+		logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
+		return baseGrpcServer.Serve(grpcListener)
+	}, func(error) {
+		_ = grpcListener.Close()
+	})
+
+	httpListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPPort))
+	if err != nil {
+		logger.Fatal(err)
+	}
+	g.Add(func() error {
+		logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPPort))
 		return http.Serve(httpListener, mux)
 	},
 		func(err error) {
-			httpListener.Close()
+			_ = httpListener.Close()
 		})
 
 	g.Add(func() error {
