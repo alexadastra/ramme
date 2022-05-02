@@ -51,3 +51,25 @@ endif
 ifndef HAS_LINT_FULL
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.44.0
 endif
+
+TITLE?="Some Cool App"
+APP?=$(shell echo ${TITLE} | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
+SNAKE_CASE_APP?=$(shell echo ${APP} | tr '-' '_')
+PASCAL_CASE_APP?=$(shell echo ${SNAKE_CASE_APP} | sed -r 's/(^|_)([a-z])/\U\2/g')
+
+.PHONY: collect
+collect:
+	cp -r ./ramme-template ./${APP}
+	mv ./${APP}/cmd/ramme-template ./${APP}/cmd/${APP}
+	mv ./${APP}/api/ramme_template.proto ./${APP}/api/${APP}.proto
+	mv ./${APP}/internal/app/ramme_template.go ./${APP}/internal/app/$(shell echo ${APP} | tr '-' '_' ).go
+	mv ./${APP}/internal/app/ramme_template_test.go ./${APP}/internal/app/$(shell echo ${APP} | tr '-' '_')_test.go
+	find ./${APP} -type f -exec sed -i "s/Ramme Template/${TITLE}/g" {} \;
+	find ./${APP} -type f -exec sed -i "s/ramme-template/${APP}/g" {} \;
+	find ./${APP} -type f -exec sed -i "s/ramme_template/${SNAKE_CASE_APP}/g" {} \;
+	find ./${APP} -type f -exec sed -i "s/RammeTemplate/${PASCAL_CASE_APP}/g" {} \;
+	cd ./${APP} && make generate APP=${APP}
+
+
+aaa:
+	echo ${APP} | tr '-' '_'

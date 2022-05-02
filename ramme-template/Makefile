@@ -1,5 +1,5 @@
 APP=ramme-template
-PROJECT=git.miem.hse.ru/786/ramme-template
+PROJECT=git.miem.hse.ru/786/${APP}
 REGISTRY?=registry.miem.hse.ru/786/${APP}
 CA_DIR?=certs
 

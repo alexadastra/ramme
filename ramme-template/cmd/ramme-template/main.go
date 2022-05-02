@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	cfg := confManager.GetBasic()
+	basicConfig := confManager.GetBasic()
 
 	advancedConfManager, advancedConfWatcher, err := advanced.InitAdvancedConfig()
 	if err != nil {
@@ -37,7 +37,7 @@ func main() {
 	advancedConfig := advancedConfManager.Get()
 
 	// Configure service and get router
-	router, logger, err := service.Setup(cfg)
+	router, logger, err := service.Setup(basicConfig)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func main() {
 	// Listen and serve handlers
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPSecondaryPort),
+		Addr:         fmt.Sprintf("%s:%d", basicConfig.Host, basicConfig.HTTPSecondaryPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
@@ -86,23 +86,23 @@ func main() {
 		_ = advancedConfWatcher.Close()
 	})
 
-	grpcListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
+	grpcListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", basicConfig.Host, basicConfig.GRPCPort))
 	if err != nil {
 		logger.Fatal(err)
 	}
 	g.Add(func() error {
-		logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", cfg.Host, cfg.GRPCPort))
+		logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", basicConfig.Host, basicConfig.GRPCPort))
 		return baseGrpcServer.Serve(grpcListener)
 	}, func(error) {
 		_ = grpcListener.Close()
 	})
 
-	httpListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPPort))
+	httpListener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", basicConfig.Host, basicConfig.HTTPPort))
 	if err != nil {
 		logger.Fatal(err)
 	}
 	g.Add(func() error {
-		logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", cfg.Host, cfg.HTTPPort))
+		logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", basicConfig.Host, basicConfig.HTTPPort))
 		return http.Serve(httpListener, mux)
 	},
 		func(err error) {
