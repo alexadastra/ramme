@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "ramme_template.proto",
+    "title": "ramme-template.proto",
     "version": "version not set"
   },
   "consumes": [

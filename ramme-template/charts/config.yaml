@@ -4,6 +4,6 @@ basic:
   http_port: 8080
   http_secondary_port: 8081
   log_level: 1
-  is_local_environment: true
+  is_local_environment: false
 advanced:
   ping_message: Hello Blip Blop

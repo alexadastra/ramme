@@ -15,8 +15,14 @@ const (
 	Pattern = "/docs/"
 )
 
-//go:embed ramme_template.swagger.json
-var spec []byte
+//go:embed ramme-template.swagger.local.json
+var specLocal []byte
 
-// Handler is required to route
-var Handler = http.StripPrefix(Path, swaggerui.Handler(spec))
+//go:embed ramme-template.swagger.k8s.json
+var specK8S []byte
+
+// HandlerLocal is required to route within local environment
+var HandlerLocal = http.StripPrefix(Path, swaggerui.Handler(specLocal))
+
+// HandlerK8S is required to route within k8s environment
+var HandlerK8S = http.StripPrefix(Path, swaggerui.Handler(specK8S))

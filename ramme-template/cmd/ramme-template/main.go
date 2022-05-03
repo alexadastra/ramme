@@ -24,11 +24,12 @@ import (
 
 func main() {
 	// Load ENV configuration
-	confManager, confWatcher, err := config.InitBasicConfig()
+	config.ServiceName = "RAMME-TEMPLATE"
+	basicConfManager, basicConfWatcher, err := config.InitBasicConfig()
 	if err != nil {
 		panic(err)
 	}
-	basicConfig := confManager.GetBasic()
+	basicConfig := basicConfManager.GetBasic()
 
 	advancedConfManager, advancedConfWatcher, err := advanced.InitAdvancedConfig()
 	if err != nil {
@@ -61,7 +62,12 @@ func main() {
 			logger.Fatal(err)
 		}
 	}
-	mux.Handle(swagger.Pattern, swagger.Handler)
+
+	if basicConfig.IsLocalEnvironment {
+		mux.Handle(swagger.Pattern, swagger.HandlerLocal)
+	} else {
+		mux.Handle(swagger.Pattern, swagger.HandlerK8S)
+	}
 
 	// Setup secondary HTTP handlers
 	// Listen and serve handlers
@@ -76,9 +82,9 @@ func main() {
 	g := system.NewGroupOperator()
 
 	g.Add(func() error {
-		return confWatcher.Run()
+		return basicConfWatcher.Run()
 	}, func(err error) {
-		_ = confWatcher.Close()
+		_ = basicConfWatcher.Close()
 	})
 	g.Add(func() error {
 		return advancedConfWatcher.Run()

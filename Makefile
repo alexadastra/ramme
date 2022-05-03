@@ -56,19 +56,23 @@ TITLE?="Some Cool App"
 APP?=$(shell echo ${TITLE} | tr ' ' '-' | tr '[:upper:]' '[:lower:]')
 SNAKE_CASE_APP?=$(shell echo ${APP} | tr '-' '_')
 PASCAL_CASE_APP?=$(shell echo ${SNAKE_CASE_APP} | sed -r 's/(^|_)([a-z])/\U\2/g')
+PATH_PREFIX?=../
 
 .PHONY: collect
 collect:
-	cp -r ./ramme-template ./${APP}
-	mv ./${APP}/cmd/ramme-template ./${APP}/cmd/${APP}
-	mv ./${APP}/api/ramme_template.proto ./${APP}/api/${APP}.proto
-	mv ./${APP}/internal/app/ramme_template.go ./${APP}/internal/app/$(shell echo ${APP} | tr '-' '_' ).go
-	mv ./${APP}/internal/app/ramme_template_test.go ./${APP}/internal/app/$(shell echo ${APP} | tr '-' '_')_test.go
-	find ./${APP} -type f -exec sed -i "s/Ramme Template/${TITLE}/g" {} \;
-	find ./${APP} -type f -exec sed -i "s/ramme-template/${APP}/g" {} \;
-	find ./${APP} -type f -exec sed -i "s/ramme_template/${SNAKE_CASE_APP}/g" {} \;
-	find ./${APP} -type f -exec sed -i "s/RammeTemplate/${PASCAL_CASE_APP}/g" {} \;
-	cd ./${APP} && make generate APP=${APP}
+	mkdir -p ${PATH_PREFIX}${APP}
+	cp -r ./ramme-template/. ${PATH_PREFIX}${APP}/
+	mv ${PATH_PREFIX}${APP}/cmd/ramme-template ${PATH_PREFIX}${APP}/cmd/${APP}
+	mv ${PATH_PREFIX}${APP}/api/ramme-template.proto ${PATH_PREFIX}${APP}/api/${APP}.proto
+	mv ${PATH_PREFIX}${APP}/internal/app/ramme_template.go ${PATH_PREFIX}${APP}/internal/app/$(shell echo ${APP} | tr '-' '_' ).go
+	mv ${PATH_PREFIX}${APP}/internal/app/ramme_template_test.go ${PATH_PREFIX}${APP}/internal/app/$(shell echo ${APP} | tr '-' '_')_test.go
+	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/Ramme Template/${TITLE}/g" {} \;
+	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/RAMME-TEMPLATE/$(shell echo ${APP} | tr '[:lower:]' '[:upper:]')/g" {} \;
+	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/ramme-template/${APP}/g" {} \;
+	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/ramme_template/${SNAKE_CASE_APP}/g" {} \;
+	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/RammeTemplate/${PASCAL_CASE_APP}/g" {} \;
+	cd ${PATH_PREFIX}${APP} && make generate APP=${APP}
+	cd ${PATH_PREFIX}${APP} && sed -i "s/git.miem.hse.ru\/786\/ramme => ..\//git.miem.hse.ru\/786\/ramme => ..\/ramme/g" go.mod && go mod tidy -compat=1.17
 
 
 aaa:
