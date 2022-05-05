@@ -127,6 +127,10 @@ func (s *Signals) Wait(logger logger.Logger, operator Operator) error {
 			logger.Info("Gracefully closed")
 			return nil
 		case sig := <-s.interrupt:
+			// DO NOTHING
+			if sig == syscall.SIGURG {
+				continue
+			}
 			s.mutex.RLock()
 			logger.Infof("Got signal: %s", sig)
 			switch {
