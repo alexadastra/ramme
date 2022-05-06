@@ -64,8 +64,8 @@ collect:
 	cp -r ./ramme-template/. ${PATH_PREFIX}${APP}/
 	mv ${PATH_PREFIX}${APP}/cmd/ramme-template ${PATH_PREFIX}${APP}/cmd/${APP}
 	mv ${PATH_PREFIX}${APP}/api/ramme-template.proto ${PATH_PREFIX}${APP}/api/${APP}.proto
-	mv ${PATH_PREFIX}${APP}/internal/app/ramme_template.go ${PATH_PREFIX}${APP}/internal/app/$(shell echo ${APP} | tr '-' '_' ).go
-	mv ${PATH_PREFIX}${APP}/internal/app/ramme_template_test.go ${PATH_PREFIX}${APP}/internal/app/$(shell echo ${APP} | tr '-' '_')_test.go
+	mv ${PATH_PREFIX}${APP}/internal/app/ramme-template/ramme_template.go ${PATH_PREFIX}${APP}/internal/app/${APP}/$(shell echo ${APP} | tr '-' '_' ).go
+	mv ${PATH_PREFIX}${APP}/internal/app/ramme-template/ramme_template_test.go ${PATH_PREFIX}${APP}/internal/app/${APP}/$(shell echo ${APP} | tr '-' '_')_test.go
 	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/Ramme Template/${TITLE}/g" {} \;
 	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/RAMME-TEMPLATE/$(shell echo ${APP} | tr '[:lower:]' '[:upper:]')/g" {} \;
 	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/ramme-template/${APP}/g" {} \;
