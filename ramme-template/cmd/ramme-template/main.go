@@ -3,11 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	service2 "git.miem.hse.ru/786/ramme-template/internal/app/service"
 	"net"
 	"net/http"
 	"time"
-
-	"git.miem.hse.ru/786/ramme-template/internal/app"
 
 	"git.miem.hse.ru/786/ramme/config"
 	"git.miem.hse.ru/786/ramme/service"
@@ -48,7 +47,7 @@ func main() {
 
 	// Setup gRPC servers.
 	baseGrpcServer := grpc.NewServer()
-	userGrpcServer := app.NewRammeTemplate()
+	userGrpcServer := service2.NewRammeTemplate()
 	api.RegisterRammeTemplateServiceServer(baseGrpcServer, userGrpcServer)
 
 	// Setup gRPC gateway.

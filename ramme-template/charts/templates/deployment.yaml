@@ -57,5 +57,3 @@ spec:
         configMap:
           name: {{ .Chart.Name }}-configmap
       terminationGracePeriodSeconds: {{ .Values.gracePeriod }}
-      imagePullSecrets:
-        - name: gitlab-auth
