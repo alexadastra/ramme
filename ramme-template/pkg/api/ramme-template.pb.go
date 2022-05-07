@@ -140,15 +140,14 @@ var file_ramme_template_proto_rawDesc = []byte{
 	0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64,
 	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x14, 0x0a,
 	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61,
-	0x6c, 0x75, 0x65, 0x32, 0x6e, 0x0a, 0x14, 0x52, 0x61, 0x6d, 0x6d, 0x65, 0x54, 0x65, 0x6d, 0x70,
-	0x6c, 0x61, 0x74, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x56, 0x0a, 0x04, 0x50,
-	0x69, 0x6e, 0x67, 0x12, 0x1b, 0x2e, 0x72, 0x61, 0x6d, 0x6d, 0x65, 0x5f, 0x74, 0x65, 0x6d, 0x70,
-	0x6c, 0x61, 0x74, 0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x1c, 0x2e, 0x72, 0x61, 0x6d, 0x6d, 0x65, 0x5f, 0x74, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74,
-	0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x13,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0d, 0x22, 0x08, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x69, 0x6e, 0x67,
-	0x3a, 0x01, 0x2a, 0x42, 0x09, 0x5a, 0x07, 0x70, 0x6b, 0x67, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6c, 0x75, 0x65, 0x32, 0x67, 0x0a, 0x0d, 0x52, 0x61, 0x6d, 0x6d, 0x65, 0x54, 0x65, 0x6d, 0x70,
+	0x6c, 0x61, 0x74, 0x65, 0x12, 0x56, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x12, 0x1b, 0x2e, 0x72,
+	0x61, 0x6d, 0x6d, 0x65, 0x5f, 0x74, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x2e, 0x50, 0x69,
+	0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x72, 0x61, 0x6d, 0x6d,
+	0x65, 0x5f, 0x74, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x13, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0d, 0x22,
+	0x08, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x69, 0x6e, 0x67, 0x3a, 0x01, 0x2a, 0x42, 0x09, 0x5a, 0x07,
+	0x70, 0x6b, 0x67, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -169,8 +168,8 @@ var file_ramme_template_proto_goTypes = []interface{}{
 	(*PingResponse)(nil), // 1: ramme_template.PingResponse
 }
 var file_ramme_template_proto_depIdxs = []int32{
-	0, // 0: ramme_template.RammeTemplateService.Ping:input_type -> ramme_template.PingRequest
-	1, // 1: ramme_template.RammeTemplateService.Ping:output_type -> ramme_template.PingResponse
+	0, // 0: ramme_template.RammeTemplate.Ping:input_type -> ramme_template.PingRequest
+	1, // 1: ramme_template.RammeTemplate.Ping:output_type -> ramme_template.PingResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -237,72 +236,72 @@ var _ grpc.ClientConnInterface
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion6
 
-// RammeTemplateServiceClient is the client API for RammeTemplateService service.
+// RammeTemplateClient is the client API for RammeTemplate service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type RammeTemplateServiceClient interface {
+type RammeTemplateClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 }
 
-type rammeTemplateServiceClient struct {
+type rammeTemplateClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewRammeTemplateServiceClient(cc grpc.ClientConnInterface) RammeTemplateServiceClient {
-	return &rammeTemplateServiceClient{cc}
+func NewRammeTemplateClient(cc grpc.ClientConnInterface) RammeTemplateClient {
+	return &rammeTemplateClient{cc}
 }
 
-func (c *rammeTemplateServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
+func (c *rammeTemplateClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
 	out := new(PingResponse)
-	err := c.cc.Invoke(ctx, "/ramme_template.RammeTemplateService/Ping", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ramme_template.RammeTemplate/Ping", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// RammeTemplateServiceServer is the server API for RammeTemplateService service.
-type RammeTemplateServiceServer interface {
+// RammeTemplateServer is the server API for RammeTemplate service.
+type RammeTemplateServer interface {
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
 }
 
-// UnimplementedRammeTemplateServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedRammeTemplateServiceServer struct {
+// UnimplementedRammeTemplateServer can be embedded to have forward compatible implementations.
+type UnimplementedRammeTemplateServer struct {
 }
 
-func (*UnimplementedRammeTemplateServiceServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
+func (*UnimplementedRammeTemplateServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 
-func RegisterRammeTemplateServiceServer(s *grpc.Server, srv RammeTemplateServiceServer) {
-	s.RegisterService(&_RammeTemplateService_serviceDesc, srv)
+func RegisterRammeTemplateServer(s *grpc.Server, srv RammeTemplateServer) {
+	s.RegisterService(&_RammeTemplate_serviceDesc, srv)
 }
 
-func _RammeTemplateService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _RammeTemplate_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RammeTemplateServiceServer).Ping(ctx, in)
+		return srv.(RammeTemplateServer).Ping(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ramme_template.RammeTemplateService/Ping",
+		FullMethod: "/ramme_template.RammeTemplate/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RammeTemplateServiceServer).Ping(ctx, req.(*PingRequest))
+		return srv.(RammeTemplateServer).Ping(ctx, req.(*PingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _RammeTemplateService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "ramme_template.RammeTemplateService",
-	HandlerType: (*RammeTemplateServiceServer)(nil),
+var _RammeTemplate_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "ramme_template.RammeTemplate",
+	HandlerType: (*RammeTemplateServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Ping",
-			Handler:    _RammeTemplateService_Ping_Handler,
+			Handler:    _RammeTemplate_Ping_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

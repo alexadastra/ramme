@@ -4,7 +4,7 @@ option go_package = "pkg/api";
 
 import "google/api/annotations.proto";
 
-service RammeTemplateService {
+service RammeTemplate {
   rpc Ping(PingRequest) returns (PingResponse) {
     option (google.api.http) = {
       post: "/v1/ping"

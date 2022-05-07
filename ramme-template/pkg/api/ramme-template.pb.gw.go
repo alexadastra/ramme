@@ -31,7 +31,7 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_RammeTemplateService_Ping_0(ctx context.Context, marshaler runtime.Marshaler, client RammeTemplateServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_RammeTemplate_Ping_0(ctx context.Context, marshaler runtime.Marshaler, client RammeTemplateClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PingRequest
 	var metadata runtime.ServerMetadata
 
@@ -48,7 +48,7 @@ func request_RammeTemplateService_Ping_0(ctx context.Context, marshaler runtime.
 
 }
 
-func local_request_RammeTemplateService_Ping_0(ctx context.Context, marshaler runtime.Marshaler, server RammeTemplateServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_RammeTemplate_Ping_0(ctx context.Context, marshaler runtime.Marshaler, server RammeTemplateServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq PingRequest
 	var metadata runtime.ServerMetadata
 
@@ -65,24 +65,24 @@ func local_request_RammeTemplateService_Ping_0(ctx context.Context, marshaler ru
 
 }
 
-// RegisterRammeTemplateServiceHandlerServer registers the http handlers for service RammeTemplateService to "mux".
-// UnaryRPC     :call RammeTemplateServiceServer directly.
+// RegisterRammeTemplateHandlerServer registers the http handlers for service RammeTemplate to "mux".
+// UnaryRPC     :call RammeTemplateServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterRammeTemplateServiceHandlerFromEndpoint instead.
-func RegisterRammeTemplateServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server RammeTemplateServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterRammeTemplateHandlerFromEndpoint instead.
+func RegisterRammeTemplateHandlerServer(ctx context.Context, mux *runtime.ServeMux, server RammeTemplateServer) error {
 
-	mux.Handle("POST", pattern_RammeTemplateService_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_RammeTemplate_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/ramme_template.RammeTemplateService/Ping")
+		rctx, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/ramme_template.RammeTemplate/Ping")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_RammeTemplateService_Ping_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_RammeTemplate_Ping_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -90,16 +90,16 @@ func RegisterRammeTemplateServiceHandlerServer(ctx context.Context, mux *runtime
 			return
 		}
 
-		forward_RammeTemplateService_Ping_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_RammeTemplate_Ping_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterRammeTemplateServiceHandlerFromEndpoint is same as RegisterRammeTemplateServiceHandler but
+// RegisterRammeTemplateHandlerFromEndpoint is same as RegisterRammeTemplateHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterRammeTemplateServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterRammeTemplateHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return err
@@ -119,39 +119,39 @@ func RegisterRammeTemplateServiceHandlerFromEndpoint(ctx context.Context, mux *r
 		}()
 	}()
 
-	return RegisterRammeTemplateServiceHandler(ctx, mux, conn)
+	return RegisterRammeTemplateHandler(ctx, mux, conn)
 }
 
-// RegisterRammeTemplateServiceHandler registers the http handlers for service RammeTemplateService to "mux".
+// RegisterRammeTemplateHandler registers the http handlers for service RammeTemplate to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterRammeTemplateServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterRammeTemplateServiceHandlerClient(ctx, mux, NewRammeTemplateServiceClient(conn))
+func RegisterRammeTemplateHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterRammeTemplateHandlerClient(ctx, mux, NewRammeTemplateClient(conn))
 }
 
-// RegisterRammeTemplateServiceHandlerClient registers the http handlers for service RammeTemplateService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "RammeTemplateServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "RammeTemplateServiceClient"
+// RegisterRammeTemplateHandlerClient registers the http handlers for service RammeTemplate
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "RammeTemplateClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "RammeTemplateClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "RammeTemplateServiceClient" to call the correct interceptors.
-func RegisterRammeTemplateServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client RammeTemplateServiceClient) error {
+// "RammeTemplateClient" to call the correct interceptors.
+func RegisterRammeTemplateHandlerClient(ctx context.Context, mux *runtime.ServeMux, client RammeTemplateClient) error {
 
-	mux.Handle("POST", pattern_RammeTemplateService_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_RammeTemplate_Ping_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/ramme_template.RammeTemplateService/Ping")
+		rctx, err := runtime.AnnotateContext(ctx, mux, req, "/ramme_template.RammeTemplate/Ping")
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_RammeTemplateService_Ping_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_RammeTemplate_Ping_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_RammeTemplateService_Ping_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_RammeTemplate_Ping_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -159,9 +159,9 @@ func RegisterRammeTemplateServiceHandlerClient(ctx context.Context, mux *runtime
 }
 
 var (
-	pattern_RammeTemplateService_Ping_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "ping"}, ""))
+	pattern_RammeTemplate_Ping_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "ping"}, ""))
 )
 
 var (
-	forward_RammeTemplateService_Ping_0 = runtime.ForwardResponseMessage
+	forward_RammeTemplate_Ping_0 = runtime.ForwardResponseMessage
 )
