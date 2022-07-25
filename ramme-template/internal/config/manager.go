@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"git.miem.hse.ru/786/ramme/config"
+	"github.com/alexadastra/ramme/config"
 	"github.com/pkg/errors"
 )
 

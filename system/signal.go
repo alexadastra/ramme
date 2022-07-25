@@ -8,7 +8,7 @@ import (
 	"sync"
 	"syscall"
 
-	"git.miem.hse.ru/786/ramme/logger"
+	"github.com/alexadastra/ramme/logger"
 )
 
 // SignalType describe

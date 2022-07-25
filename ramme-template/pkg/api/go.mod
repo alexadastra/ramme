@@ -1,4 +1,4 @@
-module git.miem.hse.ru/786/ramme-template/pkg/api
+module github.com/alexadastra/ramme-template/pkg/api
 
 go 1.17
 
