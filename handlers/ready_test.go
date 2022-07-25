@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"testing"
 
-	"git.miem.hse.ru/786/ramme/config"
-	"git.miem.hse.ru/786/ramme/logger"
-	"git.miem.hse.ru/786/ramme/logger/standard"
+	"github.com/alexadastra/ramme/config"
+	"github.com/alexadastra/ramme/logger"
+	"github.com/alexadastra/ramme/logger/standard"
 )
 
 func TestReady(t *testing.T) {

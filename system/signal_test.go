@@ -5,8 +5,8 @@ import (
 	"syscall"
 	"testing"
 
-	"git.miem.hse.ru/786/ramme/logger"
-	"git.miem.hse.ru/786/ramme/logger/standard"
+	"github.com/alexadastra/ramme/logger"
+	"github.com/alexadastra/ramme/logger/standard"
 )
 
 const (

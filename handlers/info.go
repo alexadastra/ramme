@@ -10,7 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"git.miem.hse.ru/786/ramme/version"
+	"github.com/alexadastra/ramme/version"
 )
 
 // Status contains detailed information about service

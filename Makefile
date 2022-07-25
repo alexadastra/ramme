@@ -1,4 +1,4 @@
-PROJECT=git.miem.hse.ru/786/ramme
+PROJECT=github.com/alexadastra/ramme
 
 BUILDTAGS=
 

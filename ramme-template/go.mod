@@ -1,14 +1,14 @@
-module git.miem.hse.ru/786/ramme-template
+module github.com/alexadastra/ramme-template
 
 go 1.17
 
 replace (
-	git.miem.hse.ru/786/ramme => ../
-	git.miem.hse.ru/786/ramme-template/pkg/api => ./pkg/api
+	github.com/alexadastra/ramme => ../
+	github.com/alexadastra/ramme-template/pkg/api => ./pkg/api
 )
 
 require (
-	git.miem.hse.ru/786/ramme v0.0.0-00010101000000-000000000000
+	github.com/alexadastra/ramme v0.0.0-00010101000000-000000000000
 	github.com/flowchartsman/swaggerui v0.0.0-20210303154956-0e71c297862e
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
 	github.com/pkg/errors v0.9.1

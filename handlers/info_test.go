@@ -6,10 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"git.miem.hse.ru/786/ramme/config"
-	"git.miem.hse.ru/786/ramme/logger"
-	"git.miem.hse.ru/786/ramme/logger/standard"
-	"git.miem.hse.ru/786/ramme/version"
+	"github.com/alexadastra/ramme/config"
+	"github.com/alexadastra/ramme/logger"
+	"github.com/alexadastra/ramme/logger/standard"
+	"github.com/alexadastra/ramme/version"
 )
 
 func TestInfo(t *testing.T) {

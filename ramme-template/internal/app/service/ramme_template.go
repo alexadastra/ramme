@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"git.miem.hse.ru/786/ramme-template/pkg/api"
+	"github.com/alexadastra/ramme-template/pkg/api"
 )
 
 // RammeTemplate handles stuff

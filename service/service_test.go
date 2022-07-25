@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"git.miem.hse.ru/786/ramme/handlers"
+	"github.com/alexadastra/ramme/handlers"
 
-	"git.miem.hse.ru/786/ramme/config"
+	"github.com/alexadastra/ramme/config"
 )
 
 func TestSetup(t *testing.T) {

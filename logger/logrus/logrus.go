@@ -1,7 +1,7 @@
 package logrus
 
 import (
-	"git.miem.hse.ru/786/ramme/logger"
+	"github.com/alexadastra/ramme/logger"
 	"github.com/sirupsen/logrus"
 )
 

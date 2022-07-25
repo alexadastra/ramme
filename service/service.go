@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"git.miem.hse.ru/786/ramme/handlers"
+	"github.com/alexadastra/ramme/handlers"
 
 	"github.com/pkg/errors"
 
-	"git.miem.hse.ru/786/ramme/config"
-	"git.miem.hse.ru/786/ramme/logger"
-	stdlog "git.miem.hse.ru/786/ramme/logger/standard"
-	"git.miem.hse.ru/786/ramme/version"
+	"github.com/alexadastra/ramme/config"
+	"github.com/alexadastra/ramme/logger"
+	stdlog "github.com/alexadastra/ramme/logger/standard"
+	"github.com/alexadastra/ramme/version"
 	"github.com/gorilla/mux"
 )
 
