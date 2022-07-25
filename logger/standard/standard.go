@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"git.miem.hse.ru/786/ramme/config"
-	"git.miem.hse.ru/786/ramme/logger"
+	"github.com/alexadastra/ramme/config"
+	"github.com/alexadastra/ramme/logger"
 )
 
 // UTC contains default UTC suffix

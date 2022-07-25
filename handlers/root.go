@@ -6,8 +6,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"git.miem.hse.ru/786/ramme/config"
-	"git.miem.hse.ru/786/ramme/version"
+	"github.com/alexadastra/ramme/config"
+	"github.com/alexadastra/ramme/version"
 )
 
 // Root handler shows version

@@ -3,19 +3,20 @@ package main
 import (
 	"context"
 	"fmt"
-	service2 "git.miem.hse.ru/786/ramme-template/internal/app/service"
 	"net"
 	"net/http"
 	"time"
 
-	"git.miem.hse.ru/786/ramme/config"
-	"git.miem.hse.ru/786/ramme/service"
-	"git.miem.hse.ru/786/ramme/system"
+	service2 "github.com/alexadastra/ramme-template/internal/app/service"
 
-	advanced "git.miem.hse.ru/786/ramme-template/internal/config"
-	"git.miem.hse.ru/786/ramme-template/internal/swagger"
+	"github.com/alexadastra/ramme/config"
+	"github.com/alexadastra/ramme/service"
+	"github.com/alexadastra/ramme/system"
 
-	"git.miem.hse.ru/786/ramme-template/pkg/api"
+	advanced "github.com/alexadastra/ramme-template/internal/config"
+	"github.com/alexadastra/ramme-template/internal/swagger"
+
+	"github.com/alexadastra/ramme-template/pkg/api"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"

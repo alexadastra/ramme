@@ -1,10 +1,10 @@
-module git.miem.hse.ru/786/ramme
+module github.com/alexadastra/ramme
 
 go 1.17
 
 replace (
-	git.miem.hse.ru/786/auth-service/pkg/api => ../auth-service/pkg/api
-	git.miem.hse.ru/786/ramme => ../ramme
+	github.com/alexadastra/auth-service/pkg/api => ../auth-service/pkg/api
+	github.com/alexadastra/ramme => ../ramme
 )
 
 require (

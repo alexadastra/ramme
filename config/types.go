@@ -1,6 +1,6 @@
 package config
 
-import "git.miem.hse.ru/786/ramme/logger"
+import "github.com/alexadastra/ramme/logger"
 
 var (
 	// ServiceName contains a service name prefix which used in ENV variables
