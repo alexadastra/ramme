@@ -1,6 +1,7 @@
 APP=ramme-template
+# TODO: add monorepos support (should inclde additional path parts)
 PROJECT=github.com/alexadastra/${APP}
-REGISTRY?=registry.miem.hse.ru/786/${APP}
+REGISTRY?=ghcr.io/alexadastra/${APP}
 CA_DIR?=certs
 
 # Use the 0.0.0 tag for testing, it shouldn't clobber any release builds
@@ -18,20 +19,22 @@ VALUES?=values-${INFRASTRUCTURE}
 CONTAINER_IMAGE?=${REGISTRY}/${APP}
 CONTAINER_NAME?=${APP}-${NAMESPACE}
 
+HTTP_PORT?=8080
+HTTP_SECONDARY_PORT?=8081
+GRPC_PORT?=8082
+
 REPO_INFO=$(shell git config --get remote.origin.url)
 
 ifndef COMMIT
 	COMMIT := git-$(shell git rev-parse --short HEAD)
 endif
 
+MANAGER?=docker
+
 BUILDTAGS=
 
 .PHONY: all
 all: build
-
-.PHONY: vendor
-vendor: clean bootstrap
-	dep ensure
 
 .PHONY: build
 build: test certs
@@ -39,59 +42,59 @@ build: test certs
 	@CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -a -installsuffix cgo \
 		-ldflags "-s -w -X ${PROJECT}/internal/version.RELEASE=${RELEASE} -X ${PROJECT}/internal/version.COMMIT=${COMMIT} -X ${PROJECT}/internal/version.REPO=${REPO_INFO}" \
 		-o bin/${GOOS}-${GOARCH}/${APP} ./cmd/${APP}/main.go
-	docker build --pull -t $(CONTAINER_IMAGE):$(RELEASE) .
+	${MANAGER} build --pull -t $(CONTAINER_IMAGE):$(RELEASE) .
 
 .PHONY: certs
 certs:
 ifeq ("$(wildcard $(CA_DIR)/ca-certificates.crt)","")
 	@echo "+ $@"
-	@docker run --name ${CONTAINER_NAME}-certs -d alpine:latest sh -c "apk --update upgrade && apk add ca-certificates && update-ca-certificates"
-	@docker wait ${CONTAINER_NAME}-certs
+	@${MANAGER} run --name ${CONTAINER_NAME}-certs -d alpine:latest sh -c "apk --update upgrade && apk add ca-certificates && update-ca-certificates"
+	@${MANAGER} wait ${CONTAINER_NAME}-certs
 	@mkdir -p ${CA_DIR}
-	@docker cp ${CONTAINER_NAME}-certs:/etc/ssl/certs/ca-certificates.crt ${CA_DIR}
-	@docker rm -f ${CONTAINER_NAME}-certs
+	@${MANAGER} cp ${CONTAINER_NAME}-certs:/etc/ssl/certs/ca-certificates.crt ${CA_DIR}
+	@${MANAGER} rm -f ${CONTAINER_NAME}-certs
 endif
 
 .PHONY: push
 push: build
 	@echo "+ $@"
-	@docker push $(CONTAINER_IMAGE):$(RELEASE)
+	@${MANAGER} push $(CONTAINER_IMAGE):$(RELEASE)
 
 .PHONY: run
 run: build
 	@echo "+ $@"
-	@docker run --name ${CONTAINER_NAME} -p ${FRONTEND-GATEWAY_HTTP_PORT}:${FRONTEND-GATEWAY_HTTP_PORT} \
-		-p ${FRONTEND-GATEWAY_HTTP_SECONDARY_PORT}:${FRONTEND-GATEWAY_HTTP_SECONDARY_PORT} \
-		-p ${FRONTEND-GATEWAY_GRPC_PORT}:${FRONTEND-GATEWAY_GRPC_PORT} \
+	@${MANAGER} run --name ${CONTAINER_NAME} -p ${HTTP_PORT}:${HTTP_PORT} \
+		-p ${HTTP_SECONDARY_PORT}:${HTTP_SECONDARY_PORT} \
+		-p ${GRPC_PORT}:${GRPC_PORT} \
 		-d $(CONTAINER_IMAGE):$(RELEASE)
 	@sleep 1
-	@docker logs ${CONTAINER_NAME}
+	@${MANAGER} logs ${CONTAINER_NAME}
 
-HAS_RUNNED := $(shell docker ps | grep ${CONTAINER_NAME})
-HAS_EXITED := $(shell docker ps -a | grep ${CONTAINER_NAME})
+HAS_RUNNED := $(shell ${MANAGER} ps | grep ${CONTAINER_NAME})
+HAS_EXITED := $(shell ${MANAGER} ps -a | grep ${CONTAINER_NAME})
 
 .PHONY: logs
 logs:
 	@echo "+ $@"
-	@docker logs ${CONTAINER_NAME}
+	@${MANAGER} logs ${CONTAINER_NAME}
 
 .PHONY: stop
 stop:
 ifdef HAS_RUNNED
 	@echo "+ $@"
-	@docker stop ${CONTAINER_NAME}
+	@${MANAGER} stop ${CONTAINER_NAME}
 endif
 
 .PHONY: start
 start: stop
 	@echo "+ $@"
-	@docker start ${CONTAINER_NAME}
+	@${MANAGER} start ${CONTAINER_NAME}
 
 .PHONY: rm
 rm:
 ifdef HAS_EXITED
 	@echo "+ $@"
-	@docker rm ${CONTAINER_NAME}
+	@${MANAGER} rm ${CONTAINER_NAME}
 endif
 
 .PHONY: deploy
@@ -99,27 +102,23 @@ deploy: push
 	@echo "+ $@"
 	helm upgrade ${CONTAINER_NAME} -f charts/${VALUES}.yaml charts --kube-context ${INFRASTRUCTURE} --namespace ${NAMESPACE} --version=${RELEASE} --install --wait --debug
 
-HAS_DEPLOYMENT := $(shell kubectl get deployments | grep ${APP})
-HAS_SERVICE := $(shell kubectl get services | grep ${APP})
-HAS_CONFIGMAP := $(shell kubectl get deployments | grep ${APP})
-
 .PHONY: delete_service
 delete_service:
-ifdef HAS_SERVICE
+ifdef $(shell kubectl get services | grep ${APP})
 	@echo "+ $@"
 	kubectl delete -n ${NAMESPACE} service ${APP}
 endif
 
 .PHONY: delete_deployment
 delete_deployment:
-ifdef HAS_DEPLOYMENT
+ifdef $(shell kubectl get deployments | grep ${APP})
 	@echo "+ $@"
 	kubectl delete -n ${NAMESPACE} deployment ${APP}
 endif
 
 .PHONY: delete_configmap
 delete_configmap:
-ifdef HAS_CONFIGMAP
+ifdef $(shell kubectl get deployments | grep ${APP})
 	@echo "+ $@"
 	kubectl delete -n ${NAMESPACE} configmap ${APP}-configmap
 endif
@@ -180,21 +179,23 @@ ifndef HAS_LINT_FULL
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.44.0
 endif
 
-.PHONY: docker_clean
-docker_clean: stop rm
+.PHONY: local_clean
+local_clean: stop rm
 
 .PHONY: generate
 generate:
-	sudo rm -rf pkg
-	sudo rm -rf internal/swagger/*.json
-	docker-compose -f docker-compose.yml up
-	sudo cp -r ./pkg/api/pkg/api/* ./pkg/api
-	sudo rm -rf pkg/api/pkg
-	sudo mv ./pkg/api/${APP}.swagger.json ./internal/swagger
-	sudo chmod -R 777 ./pkg
-	sudo chmod -R 777 ./internal/swagger/${APP}.swagger.json
-	cd ./internal/swagger && cp ./${APP}.swagger.json ./${APP}.swagger.local.json
-	cd ./internal/swagger && mv ./${APP}.swagger.json ./${APP}.swagger.k8s.json
-	cd ./internal/swagger && sed -i 's/v1/${NAMESPACE}\/${APP}\/v1/g' ./${APP}.swagger.k8s.json
-	cd ./pkg/api && go mod init ${PROJECT}/pkg/api && go mod tidy
-	sudo rm -rf gen
+	@echo "+ $@"
+	@rm -rf pkg
+	@rm -rf internal/swagger/*.json
+	@${MANAGER} run -v ./:/defs --name protoc-all -d namely/protoc-all:latest \
+                -d api -o tmp -i third_party/googleapis -i pkg/api -l go --with-gateway
+	@${MANAGER} wait protoc-all
+	@${MANAGER} logs protoc-all
+	@${MANAGER} rm -f protoc-all
+	@mv ./tmp/pkg .
+	@mv ./tmp/${APP}.swagger.json ./internal/swagger
+	@rm -rf tmp
+	@cd ./internal/swagger && cp ./${APP}.swagger.json ./${APP}.swagger.local.json
+	@cd ./internal/swagger && mv ./${APP}.swagger.json ./${APP}.swagger.k8s.json
+	@cd ./internal/swagger && sed -i '' -e 's/v1/${NAMESPACE}\/${APP}\/v1/g' ./${APP}.swagger.k8s.json
+	@cd ./pkg/api && go mod init ${PROJECT}/pkg/api && go mod tidy
