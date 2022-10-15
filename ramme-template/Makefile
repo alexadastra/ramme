@@ -184,18 +184,51 @@ local_clean: stop rm
 
 .PHONY: generate
 generate:
+ifeq ("$(shell uname -s)","Linux")
 	@echo "+ $@"
-	@rm -rf pkg
-	@rm -rf internal/swagger/*.json
-	@${MANAGER} run -v ./:/defs --name protoc-all -d namely/protoc-all:latest \
-                -d api -o tmp -i third_party/googleapis -i pkg/api -l go --with-gateway
-	@${MANAGER} wait protoc-all
-	@${MANAGER} logs protoc-all
-	@${MANAGER} rm -f protoc-all
-	@mv ./tmp/pkg .
-	@mv ./tmp/${APP}.swagger.json ./internal/swagger
-	@rm -rf tmp
-	@cd ./internal/swagger && cp ./${APP}.swagger.json ./${APP}.swagger.local.json
-	@cd ./internal/swagger && mv ./${APP}.swagger.json ./${APP}.swagger.k8s.json
-	@cd ./internal/swagger && sed -i '' -e 's/v1/${NAMESPACE}\/${APP}\/v1/g' ./${APP}.swagger.k8s.json
-	@cd ./pkg/api && go mod init ${PROJECT}/pkg/api && go mod tidy
+	rm -rf pkg
+	rm -rf internal/swagger/*.json
+	${MANAGER} run \
+		--user "$(id -u):$(id -g)" \
+		-v `pwd`:/defs \
+		--name protoc-all \
+			-d namely/protoc-all:latest \
+	        -d api \
+			-o tmp \
+			-i third_party/googleapis -i pkg/api -l go --with-gateway
+	${MANAGER} wait protoc-all
+	${MANAGER} logs protoc-all
+	${MANAGER} rm -f protoc-all
+	sudo chown -R ${USER} tmp
+	mv ./tmp/pkg .
+	mv ./tmp/${APP}.swagger.json ./internal/swagger
+	rm -rf tmp
+	cd ./internal/swagger && cp ./${APP}.swagger.json ./${APP}.swagger.local.json
+	cd ./internal/swagger && mv ./${APP}.swagger.json ./${APP}.swagger.k8s.json
+	cd ./internal/swagger && sed -i -e 's/v1/${NAMESPACE}\/${APP}\/v1/g' ./${APP}.swagger.k8s.json
+	cd ./pkg/api && go mod init ${PROJECT}/pkg/api && go mod tidy
+endif
+ifeq ("$(shell uname -s)","Darwin")
+	@echo "+ $@"
+	rm -rf pkg
+	rm -rf internal/swagger/*.json
+	${MANAGER} run \
+		--user "$(id -u):$(id -g)" \
+		-v `pwd`:/defs \
+		--name protoc-all \
+			-d namely/protoc-all:latest \
+	        -d api \
+			-o tmp \
+			-i third_party/googleapis -i pkg/api -l go --with-gateway
+	${MANAGER} wait protoc-all
+	${MANAGER} logs protoc-all
+	${MANAGER} rm -f protoc-all
+	sudo chown -R ${USER} tmp
+	mv ./tmp/pkg .
+	mv ./tmp/${APP}.swagger.json ./internal/swagger
+	rm -rf tmp
+	cd ./internal/swagger && cp ./${APP}.swagger.json ./${APP}.swagger.local.json
+	cd ./internal/swagger && mv ./${APP}.swagger.json ./${APP}.swagger.k8s.json
+	cd ./internal/swagger && sed -i '' -e 's/v1/${NAMESPACE}\/${APP}\/v1/g' ./${APP}.swagger.k8s.json
+	cd ./pkg/api && go mod init ${PROJECT}/pkg/api && go mod tidy
+endif

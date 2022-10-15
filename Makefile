@@ -73,7 +73,3 @@ collect:
 	find ${PATH_PREFIX}${APP} -type f -exec sed -i "s/RammeTemplate/${PASCAL_CASE_APP}/g" {} \;
 	cd ${PATH_PREFIX}${APP} && make generate APP=${APP}
 	cd ${PATH_PREFIX}${APP} && sed -i "s/git.miem.hse.ru\/786\/ramme => ..\//git.miem.hse.ru\/786\/ramme => ..\/ramme/g" go.mod && go mod tidy -compat=1.17
-
-
-aaa:
-	echo ${APP} | tr '-' '_'
