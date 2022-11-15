@@ -49,7 +49,7 @@ func main() {
 	// Setup gRPC servers.
 	baseGrpcServer := grpc.NewServer()
 	userGrpcServer := service2.NewRammeTemplate()
-	api.RegisterRammeTemplateServiceServer(baseGrpcServer, userGrpcServer)
+	api.RegisterRammeTemplateServer(baseGrpcServer, userGrpcServer)
 
 	// Setup gRPC gateway.
 	ctx := context.Background()
@@ -57,7 +57,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", rmux)
 	{
-		err = api.RegisterRammeTemplateServiceHandlerServer(ctx, rmux, userGrpcServer)
+		err = api.RegisterRammeTemplateHandlerServer(ctx, rmux, userGrpcServer)
 		if err != nil {
 			logger.Fatal(err)
 		}

@@ -11,7 +11,7 @@ import (
 type RammeTemplate struct{}
 
 // NewRammeTemplate creates new server
-func NewRammeTemplate() api.RammeTemplateServiceServer {
+func NewRammeTemplate() api.RammeTemplateServer {
 	return &RammeTemplate{}
 }
 
