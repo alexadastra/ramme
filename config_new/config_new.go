@@ -5,27 +5,44 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
+const fileWatcherInterval = time.Second
+
 // Config represents the structure that contains configurations
 type Config struct {
-	bM       *sync.Mutex
-	aM       *sync.Mutex
-	Basic    map[string]Entry `yaml:"basic"`
-	Advanced map[string]Entry `yaml:"advanced"`
+	bM          *sync.Mutex
+	aM          *sync.Mutex
+	Basic       map[string]Entry `yaml:"basic"`
+	Advanced    map[string]Entry `yaml:"advanced"`
+	fileWatcher *FileWatcher
 }
 
 // NewConfig creates new Config
-func NewConfig() *Config {
-	return &Config{
+func NewConfig(path string) (*Config, func() error, func() error, error) {
+	c := &Config{
 		bM:       &sync.Mutex{},
 		aM:       &sync.Mutex{},
 		Basic:    make(map[string]Entry),
 		Advanced: make(map[string]Entry),
 	}
+
+	if err := c.Set(path); err != nil {
+		return nil, nil, nil, errors.Wrap(err, "failed to initially set config")
+	}
+
+	fw, err := NewFileWatcher(path, fileWatcherInterval, func() error { return c.Set(path) })
+	if err != nil {
+		return nil, nil, nil, errors.Wrap(err, "failed to create new file watcher")
+	}
+
+	c.fileWatcher = fw
+
+	return c, fw.Run, fw.Close, nil
 }
 
 // GetBasic fetches config entry from basic config
