@@ -5,27 +5,18 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/alexadastra/ramme/config_new"
 	"github.com/alexadastra/ramme/handlers"
-
-	"github.com/alexadastra/ramme/config"
 )
 
 func TestSetup(t *testing.T) {
-	confManager, watcher, err := config.InitBasicConfig()
+	conf, st, end, err := config_new.NewConfig("./config_new/tests/config.yaml")
 	if err != nil {
 		panic(err)
 	}
-	go func() {
-		_ = watcher.Run()
-	}()
-	defer func(watcher *config.FileWatcher) {
-		_ = watcher.Close()
-	}(watcher)
-	cfg := confManager.GetBasic()
-	if err != nil {
-		t.Error("Expected loading of environment vars, got", err)
-	}
-	router, logger, err := Setup(cfg)
+	go st()
+	defer end()
+	router, logger, err := Setup(conf)
 	if err != nil {
 		t.Errorf("Fail, got '%s', want '%v'", err, nil)
 	}
@@ -36,7 +27,7 @@ func TestSetup(t *testing.T) {
 		t.Error("Expected new logger, got nil")
 	}
 
-	h := handlers.New(logger, cfg)
+	h := handlers.New(logger, conf)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(notFound)(w, r)
 	})

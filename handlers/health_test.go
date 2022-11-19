@@ -4,13 +4,12 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/alexadastra/ramme/config"
 	"github.com/alexadastra/ramme/logger"
 	"github.com/alexadastra/ramme/logger/standard"
 )
 
 func TestHealth(t *testing.T) {
-	h := New(standard.New(&logger.Config{}), new(config.BasicConfig))
+	h := New(standard.New(&logger.Config{}), nil)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(h.Health)(w, r)
 	})

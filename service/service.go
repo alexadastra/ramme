@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/alexadastra/ramme/config_new"
 	"github.com/alexadastra/ramme/handlers"
 
 	"github.com/pkg/errors"
@@ -16,20 +17,25 @@ import (
 )
 
 // Setup configures the service
-func Setup(cfg *config.BasicConfig) (*mux.Router, logger.Logger, error) {
+func Setup(conf *config_new.Config) (*mux.Router, logger.Logger, error) {
+	logLevel := logger.Level(config_new.ToInt(conf.GetBasic(config_new.LogLevel)))
 	// Setup logger
 	l := stdlog.New(&logger.Config{
-		Level: cfg.LogLevel,
+		Level: logLevel,
 		Time:  true,
 		UTC:   true,
 	})
 
 	l.Info("Version:", version.RELEASE)
-	l.Warnf("%s log level is used", cfg.LogLevel.String())
-	l.Infof("Service %s listens secondary requests on %s:%d", config.ServiceName, cfg.Host, cfg.HTTPSecondaryPort)
+	l.Warnf("%s log level is used", logLevel.String())
+	l.Infof("Service %s listens secondary requests on %s:%d",
+		config.ServiceName,
+		config_new.ToString(config_new.ToString(conf.Get(config_new.Host))),
+		config_new.ToInt(config_new.ToInt(conf.Get(config_new.HTTPSecondaryPort))),
+	)
 
 	// Define handlers
-	h := handlers.New(l, cfg)
+	h := handlers.New(l, conf)
 
 	// Register new router
 	r := mux.NewRouter()

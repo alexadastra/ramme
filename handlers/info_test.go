@@ -6,14 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/alexadastra/ramme/config"
 	"github.com/alexadastra/ramme/logger"
 	"github.com/alexadastra/ramme/logger/standard"
 	"github.com/alexadastra/ramme/version"
 )
 
 func TestInfo(t *testing.T) {
-	h := New(standard.New(&logger.Config{}), new(config.BasicConfig))
+	h := New(standard.New(&logger.Config{}), nil)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(h.Info)(w, r)
 	})

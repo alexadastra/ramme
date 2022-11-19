@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alexadastra/ramme/config"
+	"github.com/alexadastra/ramme/config_new"
 	"github.com/alexadastra/ramme/logger"
 )
 
 // Handler defines common part for all handlers
 type Handler struct {
 	logger      logger.Logger
-	config      *config.BasicConfig
+	config      *config_new.Config
 	maintenance bool
 	stats       *stats
 }
@@ -26,10 +26,10 @@ type stats struct {
 }
 
 // New returns new instance of the Handler
-func New(logger logger.Logger, config *config.BasicConfig) *Handler {
+func New(logger logger.Logger, conf *config_new.Config) *Handler {
 	return &Handler{
 		logger: logger,
-		config: config,
+		config: conf,
 		stats: &stats{
 			requests:  new(Requests),
 			startTime: time.Now(),
