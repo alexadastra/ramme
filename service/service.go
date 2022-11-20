@@ -28,10 +28,10 @@ func Setup(conf *config_new.Config) (*mux.Router, logger.Logger, error) {
 
 	l.Info("Version:", version.RELEASE)
 	l.Warnf("%s log level is used", logLevel.String())
-	l.Infof("Service %s listens secondary requests on %s:%d",
+	l.Infof("Service %s listens admin requests on %s:%d",
 		config.ServiceName,
 		config_new.ToString(config_new.ToString(conf.Get(config_new.Host))),
-		config_new.ToInt(config_new.ToInt(conf.Get(config_new.HTTPSecondaryPort))),
+		config_new.ToInt(config_new.ToInt(conf.Get(config_new.HTTPAdminPort))),
 	)
 
 	// Define handlers

@@ -22,8 +22,8 @@ type BasicConfig struct {
 	GRPCPort int `split_words:"true" yaml:"grpc_port"`
 	// Local service HTTP port
 	HTTPPort int `split_words:"true" yaml:"http_port"`
-	// Local secondary service HTTP port (for monitoring, tracing, health/readiness check etc.)
-	HTTPSecondaryPort int `split_words:"true" yaml:"http_secondary_port"`
+	// Local admin service HTTP port (for monitoring, tracing, health/readiness check etc.)
+	HTTPAdminPort int `split_words:"true" yaml:"http_admin_port"`
 	// Logging level in logger.Level notation
 	LogLevel logger.Level `split_words:"true" yaml:"log_level"`
 	// is local environment

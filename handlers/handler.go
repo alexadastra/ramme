@@ -1,4 +1,4 @@
-// Package handlers defines admin (secondary) HTTP app handlers
+// Package handlers defines admin HTTP app handlers
 package handlers
 
 import (

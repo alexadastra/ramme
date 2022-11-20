@@ -116,11 +116,11 @@ service:
 
   ## App service port
   ##
-  externalHTTPSecondaryPort: 81
+  externalHTTPAdminPort: 81
 
   ## Pod exposed port
   ##
-  internalHTTPSecondaryPort: 8081
+  internalHTTPAdminPort: 8081
 
   ## App service port
   ##

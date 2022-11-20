@@ -36,17 +36,17 @@ spec:
         image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: {{ .Values.service.internalHTTPSecondaryPort }}
+        - containerPort: {{ .Values.service.internalHTTPAdminPort }}
         - containerPort: {{ .Values.service.internalHTTPPort }}
         - containerPort: {{ .Values.service.internalGRPCPort }}
         livenessProbe:
           httpGet:
             path: /healthz
-            port: {{ .Values.service.internalHTTPSecondaryPort }}
+            port: {{ .Values.service.internalHTTPAdminPort }}
         readinessProbe:
           httpGet:
             path: /readyz
-            port: {{ .Values.service.internalHTTPSecondaryPort }}
+            port: {{ .Values.service.internalHTTPAdminPort }}
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         volumeMounts:

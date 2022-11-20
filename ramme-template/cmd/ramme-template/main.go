@@ -69,11 +69,11 @@ func main() {
 		mux.Handle(swagger.Pattern, swagger.HandlerK8S)
 	}
 
-	// Setup secondary HTTP handlers
+	// Setup admin HTTP handlers
 	// Listen and serve handlers
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         fmt.Sprintf("%s:%d", basicConfig.Host, basicConfig.HTTPSecondaryPort),
+		Addr:         fmt.Sprintf("%s:%d", basicConfig.Host, basicConfig.HTTPAdminPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

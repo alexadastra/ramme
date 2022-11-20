@@ -19,7 +19,6 @@ func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Serv
 	host := config_new.ToString(conf.Get(config_new.Host))
 	grpcPort := config_new.ToInt(conf.Get(config_new.GRPCPort))
 	httpPort := config_new.ToInt(conf.Get(config_new.HTTPPort))
-	httpPortSec := config_new.ToInt(conf.Get(config_new.HTTPSecondaryPort))
 
 	// Configure service and get router
 	router, logger, err := Setup(conf)
@@ -32,8 +31,8 @@ func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Serv
 	logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", host, grpcPort))
 
 	httpStart, httpStop := setupHTTP(mux, &HTTPServerConfig{
-		WriteTimeOut: 15 * time.Second,
-		ReadTimeOut:  15 * time.Second,
+		WriteTimeOut: config_new.ToDuration(conf.Get(config_new.HTTPWriteTimeout)),
+		ReadTimeOut:  config_new.ToDuration(conf.Get(config_new.HTTPReadTimeout)),
 		Host:         host,
 		Port:         httpPort,
 	})
@@ -41,10 +40,10 @@ func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Serv
 	logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", host, httpPort))
 
 	httpSecStart, httpSecStop := setupHTTP(router, &HTTPServerConfig{
-		WriteTimeOut: 15 * time.Second,
-		ReadTimeOut:  15 * time.Second,
+		WriteTimeOut: config_new.ToDuration(conf.Get(config_new.HTTPAdminWriteTimeout)),
+		ReadTimeOut:  config_new.ToDuration(conf.Get(config_new.HTTPAdminReadTimeout)),
 		Host:         host,
-		Port:         httpPortSec,
+		Port:         config_new.ToInt(conf.Get(config_new.HTTPAdminPort)),
 	})
 	g.Add(httpSecStart, httpSecStop)
 
