@@ -14,8 +14,8 @@ func TestSetup(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	go st()
-	defer end()
+	go func() { _ = st() }()
+	defer func() { _ = end() }()
 	router, logger, err := Setup(conf)
 	if err != nil {
 		t.Errorf("Fail, got '%s', want '%v'", err, nil)

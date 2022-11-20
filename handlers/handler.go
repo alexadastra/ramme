@@ -1,3 +1,4 @@
+// Package handlers defines admin (secondary) HTTP app handlers
 package handlers
 
 import (
@@ -16,6 +17,7 @@ type Handler struct {
 	stats       *stats
 }
 
+// TODO: stats should also be linked with gRPC and HTTP handlers
 type stats struct {
 	requests        *Requests
 	averageDuration time.Duration

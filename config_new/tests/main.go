@@ -12,8 +12,8 @@ func main() {
 		panic(err)
 	}
 
-	go start()
-	defer stop()
+	go func() { _ = start() }()
+	defer func() { _ = stop() }()
 
 	fmt.Println(conf.Get("some_int"))
 	fmt.Println(1 + config_new.ToInt(conf.Get("some_bool")))
