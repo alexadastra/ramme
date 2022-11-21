@@ -1,4 +1,4 @@
-package config_new
+package config
 
 import "time"
 

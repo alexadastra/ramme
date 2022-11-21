@@ -1,59 +1,109 @@
-// Package config defines basic app settings
+// Package config defines new config handling implementation
 package config
 
 import (
 	"io/ioutil"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
-
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
-// InitBasicConfig inits config
-func InitBasicConfig() (Manager, *FileWatcher, error) {
-	configData, err := LoadFileData(File)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to load file")
-	}
-	config, err := UnmarshalConfig(configData)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to unmarshal config")
-	}
+const fileWatcherInterval = time.Second
 
-	confManager := NewMutexConfigManager(&config.Basic)
+var (
+	// ServiceName contains a service name prefix which used in ENV variables
+	ServiceName = "RAMME-TEMPLATE"
+	// File contains path to .yaml config file
+	File = "/etc/config/config.yaml"
+)
 
-	// Watch the file for modification and update the config manager with the new config when it's available
-	watcher, err := WatchFile(File, time.Second, func() error {
-		var configData []byte
-		configData, err = LoadFileData(File)
-		if err != nil {
-			return errors.Wrap(err, "failed to load file")
-		}
-		err = confManager.Set(configData)
-		if err != nil {
-			return errors.Wrap(err, "failed to reset config")
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, nil, err
-	}
-	return confManager, watcher, nil
+// Config represents the structure that contains configurations
+type Config struct {
+	bM          *sync.Mutex
+	aM          *sync.Mutex
+	Basic       map[string]Entry `yaml:"basic"`
+	Advanced    map[string]Entry `yaml:"advanced"`
+	fileWatcher *FileWatcher
 }
 
-// LoadFileData loads config data from file loader
-func LoadFileData(configFile string) ([]byte, error) {
-	return ioutil.ReadFile(filepath.Clean(configFile))
+// NewConfig creates new Config
+func NewConfig(path string) (*Config, func() error, func() error, error) {
+	c := &Config{
+		bM:       &sync.Mutex{},
+		aM:       &sync.Mutex{},
+		Basic:    make(map[string]Entry),
+		Advanced: make(map[string]Entry),
+	}
+
+	if err := c.Set(path); err != nil {
+		return nil, nil, nil, errors.Wrap(err, "failed to initially set config")
+	}
+
+	fw, err := NewFileWatcher(path, fileWatcherInterval, func() error { return c.Set(path) })
+	if err != nil {
+		return nil, nil, nil, errors.Wrap(err, "failed to create new file watcher")
+	}
+
+	c.fileWatcher = fw
+
+	return c, fw.Run, fw.Close, nil
 }
 
-// UnmarshalConfig unmarshalls file bytes to advanced config
-func UnmarshalConfig(configData []byte) (*Config, error) {
+// GetBasic fetches config entry from basic config
+func (c *Config) GetBasic(key string) Entry {
+	c.bM.Lock()
+	defer c.bM.Unlock()
+
+	tmp := c.Basic[key]
+	return tmp
+}
+
+// Get fetches config entry from advanced config
+func (c *Config) Get(key string) Entry {
+	c.aM.Lock()
+	defer c.aM.Unlock()
+
+	tmp := c.Advanced[key]
+	return tmp
+}
+
+// Set sets new config from given file path
+func (c *Config) Set(filePath string) error {
+	bytes, err := loadFileData(filePath)
+	if err != nil {
+		return err
+	}
+
+	conf, err := unmarshalConfig(bytes)
+	if err != nil {
+		return err
+	}
+
+	c.bM.Lock()
+	c.Basic = conf.Basic
+	c.bM.Unlock()
+
+	c.aM.Lock()
+	c.Advanced = conf.Advanced
+	c.aM.Unlock()
+
+	return nil
+}
+
+// unmarshalConfig unmatshalls YAML file bytes into Config
+func unmarshalConfig(configData []byte) (*Config, error) {
 	conf := &Config{}
 	err := yaml.Unmarshal(configData, conf)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to unmarshal ")
+		return nil, errors.Wrap(err, "failed to unmarshal config")
 	}
 	return conf, nil
+}
+
+// loadFileData loads YAML config data from file loader int bytes
+func loadFileData(configFile string) ([]byte, error) {
+	return ioutil.ReadFile(filepath.Clean(configFile))
 }

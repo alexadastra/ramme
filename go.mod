@@ -8,7 +8,6 @@ require (
 	github.com/rs/xlog v0.0.0-20171227185259-131980fab91b
 	github.com/sirupsen/logrus v1.9.0
 	gopkg.in/fsnotify.v1 v1.4.7
-	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 

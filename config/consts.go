@@ -1,4 +1,4 @@
-package config_new
+package config
 
 const (
 	// Host defines the host app listens requests from

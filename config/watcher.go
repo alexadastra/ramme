@@ -18,8 +18,8 @@ type FileWatcher struct {
 	callback func() error
 }
 
-// WatchFile begins watching a file with a specific interval and action
-func WatchFile(path string, interval time.Duration, action func() error) (*FileWatcher, error) {
+// NewFileWatcher begins watching a file with a specific interval and action
+func NewFileWatcher(path string, interval time.Duration, action func() error) (*FileWatcher, error) {
 	fsWatcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, err

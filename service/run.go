@@ -9,16 +9,16 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alexadastra/ramme/config_new"
+	"github.com/alexadastra/ramme/config"
 	"github.com/alexadastra/ramme/system"
 	"google.golang.org/grpc"
 )
 
 // Run inits and starts up ramme app components
-func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Server, mux http.Handler, conf *config_new.Config) {
-	host := config_new.ToString(conf.Get(config_new.Host))
-	grpcPort := config_new.ToInt(conf.Get(config_new.GRPCPort))
-	httpPort := config_new.ToInt(conf.Get(config_new.HTTPPort))
+func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Server, mux http.Handler, conf *config.Config) {
+	host := config.ToString(conf.Get(config.Host))
+	grpcPort := config.ToInt(conf.Get(config.GRPCPort))
+	httpPort := config.ToInt(conf.Get(config.HTTPPort))
 
 	// Configure service and get router
 	router, logger, err := Setup(conf)
@@ -31,8 +31,8 @@ func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Serv
 	logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", host, grpcPort))
 
 	httpStart, httpStop := setupHTTP(mux, &HTTPServerConfig{
-		WriteTimeOut: config_new.ToDuration(conf.Get(config_new.HTTPWriteTimeout)),
-		ReadTimeOut:  config_new.ToDuration(conf.Get(config_new.HTTPReadTimeout)),
+		WriteTimeOut: config.ToDuration(conf.Get(config.HTTPWriteTimeout)),
+		ReadTimeOut:  config.ToDuration(conf.Get(config.HTTPReadTimeout)),
 		Host:         host,
 		Port:         httpPort,
 	})
@@ -40,10 +40,10 @@ func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Serv
 	logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", host, httpPort))
 
 	httpSecStart, httpSecStop := setupHTTP(router, &HTTPServerConfig{
-		WriteTimeOut: config_new.ToDuration(conf.Get(config_new.HTTPAdminWriteTimeout)),
-		ReadTimeOut:  config_new.ToDuration(conf.Get(config_new.HTTPAdminReadTimeout)),
+		WriteTimeOut: config.ToDuration(conf.Get(config.HTTPAdminWriteTimeout)),
+		ReadTimeOut:  config.ToDuration(conf.Get(config.HTTPAdminReadTimeout)),
 		Host:         host,
-		Port:         config_new.ToInt(conf.Get(config_new.HTTPAdminPort)),
+		Port:         config.ToInt(conf.Get(config.HTTPAdminPort)),
 	})
 	g.Add(httpSecStart, httpSecStop)
 

@@ -5,12 +5,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/alexadastra/ramme/config_new"
+	"github.com/alexadastra/ramme/config"
 	"github.com/alexadastra/ramme/handlers"
 )
 
 func TestSetup(t *testing.T) {
-	conf, st, end, err := config_new.NewConfig("./config_new/tests/config.yaml")
+	conf, st, end, err := config.NewConfig("./config/tests/config.yaml")
 	if err != nil {
 		panic(err)
 	}

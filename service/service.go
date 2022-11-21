@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/alexadastra/ramme/config_new"
 	"github.com/alexadastra/ramme/handlers"
 
 	"github.com/pkg/errors"
@@ -17,8 +16,8 @@ import (
 )
 
 // Setup configures the service
-func Setup(conf *config_new.Config) (*mux.Router, logger.Logger, error) {
-	logLevel := logger.Level(config_new.ToInt(conf.GetBasic(config_new.LogLevel)))
+func Setup(conf *config.Config) (*mux.Router, logger.Logger, error) {
+	logLevel := logger.Level(config.ToInt(conf.GetBasic(config.LogLevel)))
 	// Setup logger
 	l := stdlog.New(&logger.Config{
 		Level: logLevel,
@@ -30,8 +29,8 @@ func Setup(conf *config_new.Config) (*mux.Router, logger.Logger, error) {
 	l.Warnf("%s log level is used", logLevel.String())
 	l.Infof("Service %s listens admin requests on %s:%d",
 		config.ServiceName,
-		config_new.ToString(config_new.ToString(conf.Get(config_new.Host))),
-		config_new.ToInt(config_new.ToInt(conf.Get(config_new.HTTPAdminPort))),
+		config.ToString(config.ToString(conf.Get(config.Host))),
+		config.ToInt(config.ToInt(conf.Get(config.HTTPAdminPort))),
 	)
 
 	// Define handlers
