@@ -10,12 +10,7 @@ import (
 )
 
 func TestSetup(t *testing.T) {
-	conf, st, end, err := config.NewConfig("./config/tests/config.yaml")
-	if err != nil {
-		panic(err)
-	}
-	go func() { _ = st() }()
-	defer func() { _ = end() }()
+	conf := config.NewMockConfig()
 	router, logger, err := Setup(conf)
 	if err != nil {
 		t.Errorf("Fail, got '%s', want '%v'", err, nil)

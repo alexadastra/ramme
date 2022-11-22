@@ -1,4 +1,5 @@
-package logger
+// Package xlog contains xlog logger implementation
+package xlog
 
 import (
 	"os"
@@ -7,8 +8,8 @@ import (
 	"github.com/rs/xlog"
 )
 
-// newXLog creates "github.com/rs/xlog" logger
-func newXLog(config *logger.Config) logger.Logger {
+// NewLogger creates "github.com/rs/xlog" logger
+func NewLogger(config *logger.Config) logger.Logger {
 	var out xlog.Output
 	switch config.Err {
 	// We should find more matches between types of output

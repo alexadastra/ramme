@@ -20,8 +20,15 @@ var (
 	File = "/etc/config/config.yaml"
 )
 
-// Config represents the structure that contains configurations
-type Config struct {
+// Config represents the structure that contains configurations both for logic and middleware
+type Config interface {
+	Get(key string) Entry
+	GetBasic(key string) Entry
+	Set(filePath string) error
+}
+
+// YAMLConfig fetched from YAML file
+type YAMLConfig struct {
 	bM          *sync.Mutex
 	aM          *sync.Mutex
 	Basic       map[string]Entry `yaml:"basic"`
@@ -30,8 +37,8 @@ type Config struct {
 }
 
 // NewConfig creates new Config
-func NewConfig(path string) (*Config, func() error, func() error, error) {
-	c := &Config{
+func NewConfig(path string) (Config, func() error, func() error, error) {
+	c := &YAMLConfig{
 		bM:       &sync.Mutex{},
 		aM:       &sync.Mutex{},
 		Basic:    make(map[string]Entry),
@@ -53,7 +60,7 @@ func NewConfig(path string) (*Config, func() error, func() error, error) {
 }
 
 // GetBasic fetches config entry from basic config
-func (c *Config) GetBasic(key string) Entry {
+func (c *YAMLConfig) GetBasic(key string) Entry {
 	c.bM.Lock()
 	defer c.bM.Unlock()
 
@@ -62,7 +69,7 @@ func (c *Config) GetBasic(key string) Entry {
 }
 
 // Get fetches config entry from advanced config
-func (c *Config) Get(key string) Entry {
+func (c *YAMLConfig) Get(key string) Entry {
 	c.aM.Lock()
 	defer c.aM.Unlock()
 
@@ -71,7 +78,7 @@ func (c *Config) Get(key string) Entry {
 }
 
 // Set sets new config from given file path
-func (c *Config) Set(filePath string) error {
+func (c *YAMLConfig) Set(filePath string) error {
 	bytes, err := loadFileData(filePath)
 	if err != nil {
 		return err
@@ -94,8 +101,8 @@ func (c *Config) Set(filePath string) error {
 }
 
 // unmarshalConfig unmatshalls YAML file bytes into Config
-func unmarshalConfig(configData []byte) (*Config, error) {
-	conf := &Config{}
+func unmarshalConfig(configData []byte) (*YAMLConfig, error) {
+	conf := &YAMLConfig{}
 	err := yaml.Unmarshal(configData, conf)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal config")

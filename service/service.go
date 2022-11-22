@@ -16,7 +16,7 @@ import (
 )
 
 // Setup configures the service
-func Setup(conf *config.Config) (*mux.Router, logger.Logger, error) {
+func Setup(conf config.Config) (*mux.Router, logger.Logger, error) {
 	logLevel := logger.Level(config.ToInt(conf.GetBasic(config.LogLevel)))
 	// Setup logger
 	l := stdlog.New(&logger.Config{
@@ -29,8 +29,8 @@ func Setup(conf *config.Config) (*mux.Router, logger.Logger, error) {
 	l.Warnf("%s log level is used", logLevel.String())
 	l.Infof("Service %s listens admin requests on %s:%d",
 		config.ServiceName,
-		config.ToString(config.ToString(conf.Get(config.Host))),
-		config.ToInt(config.ToInt(conf.Get(config.HTTPAdminPort))),
+		config.ToString(config.ToString(conf.GetBasic(config.Host))),
+		config.ToInt(config.ToInt(conf.GetBasic(config.HTTPAdminPort))),
 	)
 
 	// Define handlers
