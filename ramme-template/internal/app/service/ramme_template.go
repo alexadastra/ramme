@@ -1,3 +1,4 @@
+// Package service defines app middlware and stuff
 package service
 
 import (
