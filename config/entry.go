@@ -22,7 +22,8 @@ func ToBool(e Entry) bool {
 
 // ToDuration converts entry to Duration
 func ToDuration(e Entry) time.Duration {
-	return e.(time.Duration)
+	d, _ := time.ParseDuration(e.(string))
+	return d
 }
 
 // ToUInt converts entry to uint

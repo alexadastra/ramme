@@ -67,7 +67,7 @@ func setupGRPCGateway(ctx context.Context, userGrpcServer api.RammeTemplateServe
 
 func setupSwagger(mux *http.ServeMux, conf config.Config) *http.ServeMux {
 	// TODO: this prefix workaround should be solved better
-	if config.ToBool(conf.GetBasic(config.IsLocalEnvironment)) {
+	if config.ToBool(conf.Get(config.IsLocalEnvironment)) {
 		mux.Handle(swagger.Pattern, swagger.HandlerLocal)
 	} else {
 		mux.Handle(swagger.Pattern, swagger.HandlerK8S)

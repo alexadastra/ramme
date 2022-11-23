@@ -9,8 +9,8 @@ import (
 type MockConfig struct {
 	bM       *sync.Mutex
 	aM       *sync.Mutex
-	Basic    map[string]Entry `yaml:"basic"`
-	Advanced map[string]Entry `yaml:"advanced"`
+	Basic    map[Name]Entry `yaml:"basic"`
+	Advanced map[Name]Entry `yaml:"advanced"`
 }
 
 // NewMockConfig creates new MockConfig
@@ -18,7 +18,7 @@ func NewMockConfig() Config {
 	return &MockConfig{
 		bM: &sync.Mutex{},
 		aM: &sync.Mutex{},
-		Basic: map[string]Entry{
+		Basic: map[Name]Entry{
 			"host":                     "0.0.0.0",
 			"grpc_port":                6560,
 			"http_port":                8080,
@@ -30,47 +30,32 @@ func NewMockConfig() Config {
 			"is_local_environment":     true,
 			"http_read_timeout":        15 * time.Second,
 		},
-		Advanced: map[string]Entry{},
+		Advanced: map[Name]Entry{},
 	}
 }
 
-// GetBasic fetches config entry from basic config
-func (c *MockConfig) GetBasic(key string) Entry {
-	c.bM.Lock()
-	defer c.bM.Unlock()
-
-	tmp := c.Basic[key]
-	return tmp
-}
-
 // Get fetches config entry from advanced config
-func (c *MockConfig) Get(key string) Entry {
-	c.aM.Lock()
-	defer c.aM.Unlock()
+func (c *MockConfig) Get(key Name) Entry {
+	if _, ok := BasicConfigMapping[key]; ok {
+		c.bM.Lock()
+		defer c.bM.Unlock()
 
-	tmp := c.Advanced[key]
-	return tmp
+		tmp := c.Basic[key]
+		return tmp
+	}
+
+	if _, ok := AdvancedConfigMapping[key]; ok {
+		c.aM.Lock()
+		defer c.aM.Unlock()
+
+		tmp := c.Advanced[key]
+		return tmp
+	}
+
+	return nil
 }
 
 // Set sets new config from given file path
 func (c *MockConfig) Set(filePath string) error {
-	bytes, err := loadFileData(filePath)
-	if err != nil {
-		return err
-	}
-
-	conf, err := unmarshalConfig(bytes)
-	if err != nil {
-		return err
-	}
-
-	c.bM.Lock()
-	c.Basic = conf.Basic
-	c.bM.Unlock()
-
-	c.aM.Lock()
-	c.Advanced = conf.Advanced
-	c.aM.Unlock()
-
 	return nil
 }
