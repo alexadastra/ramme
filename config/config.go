@@ -11,5 +11,5 @@ var (
 // Config represents the structure that contains configurations both for logic and middleware
 type Config interface {
 	Get(key Name) Entry
-	Set(filePath string) error
+	Set(t *Target)
 }

@@ -9,8 +9,8 @@ import (
 type MockConfig struct {
 	bM       *sync.Mutex
 	aM       *sync.Mutex
-	Basic    map[Name]Entry `yaml:"basic"`
-	Advanced map[Name]Entry `yaml:"advanced"`
+	basic    map[Name]Entry `yaml:"basic"`
+	advanced map[Name]Entry `yaml:"advanced"`
 }
 
 // NewMockConfig creates new MockConfig
@@ -18,19 +18,19 @@ func NewMockConfig() Config {
 	return &MockConfig{
 		bM: &sync.Mutex{},
 		aM: &sync.Mutex{},
-		Basic: map[Name]Entry{
-			"host":                     "0.0.0.0",
-			"grpc_port":                6560,
-			"http_port":                8080,
-			"http_write_timeout":       15 * time.Second,
-			"http_admin_port":          8081,
-			"http_admin_read_timeout":  15 * time.Second,
-			"http_admin_write_timeout": 15 * time.Second,
-			"log_level":                1,
-			"is_local_environment":     true,
-			"http_read_timeout":        15 * time.Second,
+		basic: map[Name]Entry{
+			"host":                     {Val: "0.0.0.0", T: "string"},
+			"grpc_port":                {Val: 6560, T: "int"},
+			"http_port":                {Val: 8080, T: "int"},
+			"http_write_timeout":       {Val: 15 * time.Second, T: "duration"},
+			"http_admin_port":          {Val: 8081, T: "int"},
+			"http_admin_read_timeout":  {Val: 15 * time.Second, T: "duration"},
+			"http_admin_write_timeout": {Val: 15 * time.Second, T: "duration"},
+			"log_level":                {Val: 1, T: "int"},
+			"is_local_environment":     {Val: true, T: "bool"},
+			"http_read_timeout":        {Val: 15 * time.Second, T: "duration"},
 		},
-		Advanced: map[Name]Entry{},
+		advanced: map[Name]Entry{},
 	}
 }
 
@@ -40,7 +40,7 @@ func (c *MockConfig) Get(key Name) Entry {
 		c.bM.Lock()
 		defer c.bM.Unlock()
 
-		tmp := c.Basic[key]
+		tmp := c.basic[key]
 		return tmp
 	}
 
@@ -48,14 +48,12 @@ func (c *MockConfig) Get(key Name) Entry {
 		c.aM.Lock()
 		defer c.aM.Unlock()
 
-		tmp := c.Advanced[key]
+		tmp := c.advanced[key]
 		return tmp
 	}
 
-	return nil
+	return Entry{}
 }
 
 // Set sets new config from given file path
-func (c *MockConfig) Set(filePath string) error {
-	return nil
-}
+func (c *MockConfig) Set(t *Target) {}

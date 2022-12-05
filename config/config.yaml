@@ -1,0 +1,47 @@
+basic:
+  host: 
+    value: 0.0.0.0
+    type: string
+  grpc_port:
+    value: 6560
+    type: int
+  http_port: 
+    value: 8080
+    type: int
+  http_read_timeout: 
+    value: 15s
+    type: duration
+  http_write_timeout: 
+    value: 15s
+    type: duration
+  http_admin_port: 
+    value: 8081
+    type: int
+  http_admin_read_timeout: 
+    value: 15s
+    type: duration
+  http_admin_write_timeout: 
+    value: 15s
+    type: duration
+  log_level: 
+    value: 1
+    type: int
+  is_local_environment: 
+    value: true
+    type: bool
+advanced:
+  ping_message: 
+    value: Hello Blip Blop
+    type: string
+  mongo_db_dsn: 
+    value: mongodb://admin:coolmongobongo1583@localhost:1491
+    type: string
+  some_duration: 
+    value: 3h0m0s
+    type: duration
+  some_int:
+    value: true
+    type: bool
+  some_bool: 
+    value: 42069
+    type: int

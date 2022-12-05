@@ -16,9 +16,9 @@ import (
 
 // Run inits and starts up ramme app components
 func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Server, mux http.Handler, conf config.Config) {
-	host := config.ToString(conf.Get(config.Host))
-	grpcPort := config.ToInt(conf.Get(config.GRPCPort))
-	httpPort := config.ToInt(conf.Get(config.HTTPPort))
+	host := conf.Get(config.Host).ToString()
+	grpcPort := conf.Get(config.GRPCPort).ToInt()
+	httpPort := conf.Get(config.HTTPPort).ToInt()
 
 	// Configure service and get router
 	router, logger, err := Setup(conf)
@@ -31,8 +31,8 @@ func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Serv
 	logger.Warnf("Serving grpc address %s", fmt.Sprintf("%s:%d", host, grpcPort))
 
 	httpStart, httpStop := setupHTTP(mux, &HTTPServerConfig{
-		WriteTimeOut: config.ToDuration(conf.Get(config.HTTPWriteTimeout)),
-		ReadTimeOut:  config.ToDuration(conf.Get(config.HTTPReadTimeout)),
+		WriteTimeOut: conf.Get(config.HTTPWriteTimeout).ToDuration(),
+		ReadTimeOut:  conf.Get(config.HTTPReadTimeout).ToDuration(),
 		Host:         host,
 		Port:         httpPort,
 	})
@@ -40,10 +40,10 @@ func Run(ctx context.Context, g *system.GroupOperator, baseGrpcServer *grpc.Serv
 	logger.Warnf("Serving http address %s", fmt.Sprintf("%s:%d", host, httpPort))
 
 	httpSecStart, httpSecStop := setupHTTP(router, &HTTPServerConfig{
-		WriteTimeOut: config.ToDuration(conf.Get(config.HTTPAdminWriteTimeout)),
-		ReadTimeOut:  config.ToDuration(conf.Get(config.HTTPAdminReadTimeout)),
+		WriteTimeOut: conf.Get(config.HTTPAdminWriteTimeout).ToDuration(),
+		ReadTimeOut:  conf.Get(config.HTTPAdminReadTimeout).ToDuration(),
 		Host:         host,
-		Port:         config.ToInt(conf.Get(config.HTTPAdminPort)),
+		Port:         conf.Get(config.HTTPAdminPort).ToInt(),
 	})
 	g.Add(httpSecStart, httpSecStop)
 

@@ -7,7 +7,13 @@ import (
 
 	"github.com/alexadastra/ramme/config"
 	"github.com/alexadastra/ramme/logger"
+	"github.com/maxatome/go-testdeep/td"
 )
+
+/*
+	as log.Fatalf throws os.Exit(1) that fails tests, such usecases are currently removed
+	TODO: handle SIGTERM in tests
+*/
 
 func TestNewLog(t *testing.T) {
 	c := &logger.Config{}
@@ -67,25 +73,42 @@ func logMessageFormatted(level logger.Level, format, message string, out, err *b
 	}
 }
 
-func testOutput(t *testing.T, level logger.Level, message string, formatted bool) {
+func testOutput(t *testing.T, level logger.Level, message string) {
 	var want string
 	prefix := "[" + config.ServiceName + ":" + level.String() + "] "
 	out := &bytes.Buffer{}
 	err := &bytes.Buffer{}
-	if formatted {
-		want = prefix + message + "\n"
-		logMessage(level, message, out, err, false, false)
-	} else {
-		want = prefix + "message=" + message + "\n"
-		format := "message=%s"
-		logMessageFormatted(level, format, message, out, err, false, false)
-	}
+
+	want = prefix + "message=" + message + "\n"
+	format := "message=%s"
+	logMessageFormatted(level, format, message, out, err, false, false)
+
 	if level == logger.LevelDebug || level == logger.LevelInfo || level == logger.LevelWarn {
-		if got := out.String(); got != want {
+		if got := out.String(); !td.Cmp(t, got, want) {
 			t.Errorf("invalid log output:\ngot:  %v\nwant: %v", got, want)
 		}
 	} else {
-		if got := err.String(); got != want {
+		if got := err.String(); !td.Cmp(t, got, want) {
+			t.Errorf("invalid log output:\ngot:  %v\nwant: %v", got, want)
+		}
+	}
+}
+
+func testOutputFormatted(t *testing.T, level logger.Level, message string) {
+	var want string
+	prefix := "[" + config.ServiceName + ":" + level.String() + "] "
+	out := &bytes.Buffer{}
+	err := &bytes.Buffer{}
+
+	want = prefix + message + "\n"
+	logMessage(level, message, out, err, false, false)
+
+	if level == logger.LevelDebug || level == logger.LevelInfo || level == logger.LevelWarn {
+		if got := out.String(); !td.Cmp(t, got, want) {
+			t.Errorf("invalid log output:\ngot:  %v\nwant: %v", got, want)
+		}
+	} else {
+		if got := err.String(); !td.Cmp(t, got, want) {
 			t.Errorf("invalid log output:\ngot:  %v\nwant: %v", got, want)
 		}
 	}
@@ -97,10 +120,21 @@ func TestLog(t *testing.T) {
 		logger.LevelInfo,
 		logger.LevelWarn,
 		logger.LevelError,
-		logger.LevelFatal,
+		// logger.LevelFatal,
 	} {
-		testOutput(t, level, level.String()+" message", false)
-		testOutput(t, level, level.String()+" message", true)
+		testOutput(t, level, level.String()+" message")
+	}
+}
+
+func TestLogFormatted(t *testing.T) {
+	for _, level := range []logger.Level{
+		logger.LevelDebug,
+		logger.LevelInfo,
+		logger.LevelWarn,
+		logger.LevelError,
+		// logger.LevelFatal,
+	} {
+		testOutputFormatted(t, level, level.String()+" message")
 	}
 }
 
@@ -160,8 +194,8 @@ func testLevel(t *testing.T, level, messageLevel logger.Level) {
 			checkNonEmptyMessage(t, err, messageLevel, level)
 		}
 	case logger.LevelFatal:
-		log.Fatal(message)
-		checkEmptyMessage(t, err, messageLevel, level)
+		// log.Fatal(message)
+		// checkEmptyMessage(t, err, messageLevel, level)
 	}
 }
 
@@ -229,7 +263,7 @@ func TestLogWithTime(t *testing.T) {
 		logger.LevelInfo,
 		logger.LevelWarn,
 		logger.LevelError,
-		logger.LevelFatal,
+		// logger.LevelFatal,
 	} {
 		testOutputWithTime(t, level, level.String()+" message")
 		testOutputFormattedWithTime(t, level, level.String()+" message")

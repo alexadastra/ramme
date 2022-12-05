@@ -1,32 +1,106 @@
 package config
 
-import "time"
+import (
+	"time"
+
+	"github.com/pkg/errors"
+)
+
+const (
+	intType      = "int"
+	uintType     = "uint"
+	strType      = "string"
+	boolType     = "bool"
+	durationType = "duration"
+)
 
 // Entry represents some value that was passed in config
-type Entry interface{}
+type Entry struct {
+	// TODO: move annotations somewhere
+	Val interface{} `yaml:"value"`
+	T   string      `yaml:"type"`
+}
+
+// Validate casts interface to type and returns if type mismatches
+func (e *Entry) Validate() error {
+	switch e.T {
+	case intType:
+		if v, ok := e.Val.(int); ok {
+			e.Val = v
+			return nil
+		}
+		return errors.New("int type mismatch")
+	case uintType:
+		if v, ok := e.Val.(uint); ok {
+			e.Val = v
+			return nil
+		}
+		return errors.New("uint type mismatch")
+	case strType:
+		if v, ok := e.Val.(string); ok {
+			e.Val = v
+			return nil
+		}
+		return errors.New("string type mismatch")
+	case boolType:
+		if v, ok := e.Val.(bool); ok {
+			e.Val = v
+			return nil
+		}
+		return errors.New("bool type mismatch")
+	case durationType:
+		v, err := time.ParseDuration(e.Val.(string))
+		if err != nil {
+			return errors.Wrap(err, "duration type mismatch")
+		}
+		e.Val = v
+	default:
+		return errors.New("unknown type")
+	}
+	return nil
+}
 
 // ToInt converts entry to int
-func ToInt(e Entry) int {
-	return e.(int)
+func (e Entry) ToInt() int {
+	if e.T != intType {
+		return 0
+	}
+
+	return e.Val.(int)
 }
 
 // ToString converts entry to string
-func ToString(e Entry) string {
-	return e.(string)
+func (e Entry) ToString() string {
+	if e.T != strType {
+		return ""
+	}
+
+	return e.Val.(string)
 }
 
 // ToBool converts entry to bool
-func ToBool(e Entry) bool {
-	return e.(bool)
+func (e Entry) ToBool() bool {
+	if e.T != boolType {
+		return false
+	}
+
+	return e.Val.(bool)
 }
 
 // ToDuration converts entry to Duration
-func ToDuration(e Entry) time.Duration {
-	d, _ := time.ParseDuration(e.(string))
-	return d
+func (e Entry) ToDuration() time.Duration {
+	if e.T != durationType {
+		return 0
+	}
+
+	return e.Val.(time.Duration)
 }
 
 // ToUInt converts entry to uint
-func ToUInt(e Entry) uint {
-	return e.(uint)
+func (e Entry) ToUInt() uint {
+	if e.T != uintType {
+		return 0
+	}
+
+	return e.Val.(uint)
 }

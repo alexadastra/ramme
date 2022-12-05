@@ -1,3 +1,4 @@
+// Package standard describes logger implementation using "log"
 package standard
 
 import (
@@ -116,6 +117,7 @@ func (l *stdLogger) Fatal(v ...interface{}) {
 		l.setErrPrefix(logger.LevelFatal)
 		l.printErr(v...)
 	}
+	os.Exit(1)
 }
 
 // Fatalf logs an error message with format followed by a call to ox.Exit(1)
@@ -124,6 +126,7 @@ func (l *stdLogger) Fatalf(format string, v ...interface{}) {
 		l.setErrPrefix(logger.LevelFatal)
 		l.printfErr(format, v...)
 	}
+	os.Exit(1)
 }
 
 func (l *stdLogger) printStd(v ...interface{}) {

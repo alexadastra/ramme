@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/gorilla/mux v1.8.0
+	github.com/maxatome/go-testdeep v1.12.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/xlog v0.0.0-20171227185259-131980fab91b
 	github.com/sirupsen/logrus v1.9.0
@@ -12,6 +13,7 @@ require (
 )
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
