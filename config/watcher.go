@@ -1,9 +1,10 @@
 package config
 
 import (
+	"context"
+	"log"
+	"sync"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"gopkg.in/fsnotify.v1"
 )
@@ -14,38 +15,47 @@ import (
 type FileWatcher struct {
 	fsNotify *fsnotify.Watcher
 	interval time.Duration
-	done     chan struct{}
+	cancel   context.CancelFunc
+	wg       *sync.WaitGroup
 	callback func() error
 }
 
 // NewFileWatcher begins watching a file with a specific interval and action
 func NewFileWatcher(path string, interval time.Duration, action func() error) (*FileWatcher, error) {
+	wg := &sync.WaitGroup{}
 	fsWatcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, err
 	}
+	wg.Add(1)
 
 	// Add the file to be watched
 	_ = fsWatcher.Add(path)
 
 	watcher := &FileWatcher{
-		fsWatcher,
-		interval,
-		make(chan struct{}, 1),
-		action,
+		fsNotify: fsWatcher,
+		interval: interval,
+		callback: action,
+		wg:       wg,
 	}
 
 	return watcher, nil
 }
 
 // Run runs loop for checking for file change
-func (w *FileWatcher) Run() error {
+func (w *FileWatcher) Run(ctx context.Context) error {
+	ctx, w.cancel = context.WithCancel(ctx)
 	// Check for write events at this interval
 	tick := time.NewTicker(w.interval)
+
+	w.wg.Add(1)
+	defer w.wg.Done()
 
 	var lastWriteEvent *fsnotify.Event
 	for {
 		select {
+		case <-ctx.Done():
+			return nil
 		case event := <-w.fsNotify.Events:
 			// When a ConfigMap update occurs kubernetes AtomicWriter() creates a new directory;
 			// writing the updated ConfigMap contents to the new directory. Once the writing is
@@ -80,22 +90,21 @@ func (w *FileWatcher) Run() error {
 			}
 			// Execute the callback
 			if err := w.callback(); err != nil {
-				return errors.Wrap(err, "failed to perform callback")
+				log.Printf("failed to perform callback: %s", err)
 			}
 			// Reset the last event
 			lastWriteEvent = nil
-		case <-w.done:
-			goto Close
 		}
 	}
-Close:
-	close(w.done)
-	return nil
 }
 
 // Close shuts watcher down
 func (w *FileWatcher) Close() error {
-	// FIXME: this causes panic by SIGTERM
-	// w.done <- struct{}{}
-	return w.fsNotify.Close()
+	w.cancel()
+	if err := w.fsNotify.Close(); err != nil {
+		return err
+	}
+	w.wg.Done()
+	w.wg.Wait()
+	return nil
 }

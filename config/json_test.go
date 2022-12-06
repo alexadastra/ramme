@@ -7,7 +7,7 @@ import (
 	"github.com/maxatome/go-testdeep/td"
 )
 
-func TestNewTarget(t *testing.T) {
+func Test_newTargetFromJSON(t *testing.T) {
 	type args struct {
 		filePath string
 	}
@@ -19,7 +19,7 @@ func TestNewTarget(t *testing.T) {
 	}{
 		{
 			args: args{
-				filePath: "./config.yaml",
+				filePath: "./assets/config.json",
 			},
 			wantErr: false,
 			want: &Target{
@@ -39,17 +39,17 @@ func TestNewTarget(t *testing.T) {
 					"ping_message":  {Val: "Hello Blip Blop", T: "string"},
 					"mongo_db_dsn":  {Val: "mongodb://admin:coolmongobongo1583@localhost:1491", T: "string"},
 					"some_duration": {Val: 3 * time.Hour, T: "duration"},
-					"some_int":      {Val: true, T: "bool"},
-					"some_bool":     {Val: 42069, T: "int"},
+					"some_bool":     {Val: true, T: "bool"},
+					"some_int":      {Val: 42069, T: "int"},
 				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := newTarget(tt.args.filePath)
+			got, err := newTargetFromJSON(tt.args.filePath)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("NewTarget() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("newTargetFromJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !td.Cmp(t, got, tt.want) {

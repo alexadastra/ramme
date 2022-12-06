@@ -13,3 +13,9 @@ type Config interface {
 	Get(key Name) Entry
 	Set(t *Target)
 }
+
+// Target represents the DTO objects that is passed from infrastructure (filewatcher, ETCD etc.) to in-memory storage
+type Target struct {
+	Basic    map[Name]*Entry
+	Advanced map[Name]*Entry
+}

@@ -16,15 +16,17 @@ const (
 
 // Entry represents some value that was passed in config
 type Entry struct {
-	// TODO: move annotations somewhere
-	Val interface{} `yaml:"value"`
-	T   string      `yaml:"type"`
+	Val interface{}
+	T   string
 }
 
 // Validate casts interface to type and returns if type mismatches
 func (e *Entry) Validate() error {
 	switch e.T {
 	case intType:
+		if v, ok := e.Val.(float64); ok {
+			e.Val = int(v)
+		}
 		if v, ok := e.Val.(int); ok {
 			e.Val = v
 			return nil
@@ -55,7 +57,7 @@ func (e *Entry) Validate() error {
 		}
 		e.Val = v
 	default:
-		return errors.New("unknown type")
+		return errors.Errorf("unknown type %s", e.T)
 	}
 	return nil
 }

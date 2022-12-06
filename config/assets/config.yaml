@@ -39,9 +39,9 @@ advanced:
   some_duration: 
     value: 3h0m0s
     type: duration
-  some_int:
+  some_bool:
     value: true
     type: bool
-  some_bool: 
+  some_int: 
     value: 42069
     type: int

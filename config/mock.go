@@ -9,8 +9,8 @@ import (
 type MockConfig struct {
 	bM       *sync.Mutex
 	aM       *sync.Mutex
-	basic    map[Name]Entry `yaml:"basic"`
-	advanced map[Name]Entry `yaml:"advanced"`
+	basic    map[Name]Entry
+	advanced map[Name]Entry
 }
 
 // NewMockConfig creates new MockConfig

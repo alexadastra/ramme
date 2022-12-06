@@ -27,7 +27,7 @@ func main() {
 	config.ServiceName = args.ServiceName
 	config.File = args.ConfigPath
 
-	conf, confStart, confStop, err := config.NewConfig(args.ConfigPath)
+	conf, confStart, confStop, err := config.NewYAMLConfig(args.ConfigPath)
 	if err != nil {
 		panic(err)
 	}
