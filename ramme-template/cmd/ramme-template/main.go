@@ -27,13 +27,13 @@ func main() {
 	config.ServiceName = args.ServiceName
 	config.File = args.ConfigPath
 
-	conf, confStart, confStop, err := config.NewYAMLConfig(args.ConfigPath)
+	conf, confStart, confStop, err := config.NewConfigFromYAML(args.ConfigPath)
 	if err != nil {
 		panic(err)
 	}
 
 	g := system.NewGroupOperator()
-	g.Add(confStart, func(err error) { _ = confStop() })
+	g.Add(func() error { return confStart(ctx) }, func(err error) { _ = confStop() })
 
 	userGrpcServer := impl.NewRammeTemplate()
 
