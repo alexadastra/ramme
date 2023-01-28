@@ -1,3 +1,4 @@
+// Package logger contains log gathering tool implementaions and configuration
 package logger
 
 import (

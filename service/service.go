@@ -16,20 +16,25 @@ import (
 )
 
 // Setup configures the service
-func Setup(cfg *config.BasicConfig) (*mux.Router, logger.Logger, error) {
+func Setup(conf config.Config) (*mux.Router, logger.Logger, error) {
+	logLevel := logger.Level(conf.Get(config.LogLevel).ToInt())
 	// Setup logger
 	l := stdlog.New(&logger.Config{
-		Level: cfg.LogLevel,
+		Level: logLevel,
 		Time:  true,
 		UTC:   true,
 	})
 
 	l.Info("Version:", version.RELEASE)
-	l.Warnf("%s log level is used", cfg.LogLevel.String())
-	l.Infof("Service %s listens secondary requests on %s:%d", config.ServiceName, cfg.Host, cfg.HTTPSecondaryPort)
+	l.Warnf("%s log level is used", logLevel.String())
+	l.Infof("Service %s listens admin requests on %s:%d",
+		config.ServiceName,
+		conf.Get(config.Host).ToString(),
+		conf.Get(config.HTTPAdminPort).ToInt(),
+	)
 
 	// Define handlers
-	h := handlers.New(l, cfg)
+	h := handlers.New(l, conf)
 
 	// Register new router
 	r := mux.NewRouter()

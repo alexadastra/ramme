@@ -1,4 +1,4 @@
-package logger
+package xlog
 
 import (
 	"os"
@@ -8,13 +8,13 @@ import (
 )
 
 func TestNewXLog(t *testing.T) {
-	log1 := newXLog(&logger.Config{
+	log1 := NewLogger(&logger.Config{
 		Level: logger.LevelDebug,
 	})
 	if log1 == nil {
 		t.Error("Got uninitialized XLog logger")
 	}
-	log2 := newXLog(&logger.Config{
+	log2 := NewLogger(&logger.Config{
 		Level: logger.LevelInfo,
 		Out:   os.Stdout,
 		Err:   os.Stdout,

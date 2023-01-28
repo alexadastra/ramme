@@ -2,8 +2,12 @@ basic:
   host: 0.0.0.0
   grpc_port: 6560
   http_port: 8080
-  http_secondary_port: 8081
+  http_read_timeout: 15s
+  http_write_timeout: 15s
+  http_admin_port: 8081
+  http_admin_read_timeout: 15s
+  http_admin_write_timeout: 15s
   log_level: 1
-  is_local_environment: false
+  is_local_environment: true
 advanced:
   ping_message: Hello Blip Blop

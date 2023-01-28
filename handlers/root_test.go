@@ -12,7 +12,7 @@ import (
 )
 
 func TestRoot(t *testing.T) {
-	h := New(standard.New(&logger.Config{}), new(config.BasicConfig))
+	h := New(standard.New(&logger.Config{}), nil)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(h.Root)(w, r)
 	})

@@ -1,3 +1,4 @@
+// Package service defines app middlware and stuff
 package service
 
 import (
@@ -11,7 +12,7 @@ import (
 type RammeTemplate struct{}
 
 // NewRammeTemplate creates new server
-func NewRammeTemplate() api.RammeTemplateServiceServer {
+func NewRammeTemplate() api.RammeTemplateServer {
 	return &RammeTemplate{}
 }
 

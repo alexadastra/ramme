@@ -1,3 +1,4 @@
+// Package handlers defines admin HTTP app handlers
 package handlers
 
 import (
@@ -11,11 +12,12 @@ import (
 // Handler defines common part for all handlers
 type Handler struct {
 	logger      logger.Logger
-	config      *config.BasicConfig
+	config      config.Config
 	maintenance bool
 	stats       *stats
 }
 
+// TODO: stats should also be linked with gRPC and HTTP handlers
 type stats struct {
 	requests        *Requests
 	averageDuration time.Duration
@@ -26,10 +28,10 @@ type stats struct {
 }
 
 // New returns new instance of the Handler
-func New(logger logger.Logger, config *config.BasicConfig) *Handler {
+func New(logger logger.Logger, conf config.Config) *Handler {
 	return &Handler{
 		logger: logger,
-		config: config,
+		config: conf,
 		stats: &stats{
 			requests:  new(Requests),
 			startTime: time.Now(),

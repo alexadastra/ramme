@@ -5,13 +5,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/alexadastra/ramme/config"
 	"github.com/alexadastra/ramme/logger"
 	"github.com/alexadastra/ramme/logger/standard"
 )
 
 func TestCollectCodes(t *testing.T) {
-	h := New(standard.New(&logger.Config{}), new(config.BasicConfig))
+	h := New(standard.New(&logger.Config{}), nil)
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h.Base(func(w http.ResponseWriter, r *http.Request) (int, error) {
 			w.WriteHeader(http.StatusBadGateway)

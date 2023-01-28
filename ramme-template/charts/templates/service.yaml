@@ -14,10 +14,10 @@ spec:
     targetPort: {{ .Values.service.internalHTTPPort }}
     protocol: TCP
     name: {{ .Values.service.name }}
-  - port: {{ .Values.service.externalHTTPSecondaryPort }}
-    targetPort: {{ .Values.service.internalHTTPSecondaryPort }}
+  - port: {{ .Values.service.externalHTTPAdminPort }}
+    targetPort: {{ .Values.service.internalHTTPAdminPort }}
     protocol: TCP
-    name: {{ .Values.service.name }}-secondary
+    name: {{ .Values.service.name }}-admin
   - port: {{ .Values.service.externalGRPCPort }}
     targetPort: {{ .Values.service.internalGRPCPort }}
     protocol: TCP

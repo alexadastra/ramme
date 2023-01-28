@@ -20,7 +20,7 @@ CONTAINER_IMAGE?=${REGISTRY}/${APP}
 CONTAINER_NAME?=${APP}-${NAMESPACE}
 
 HTTP_PORT?=8080
-HTTP_SECONDARY_PORT?=8081
+HTTP_ADMIN_PORT?=8081
 GRPC_PORT?=8082
 
 REPO_INFO=$(shell git config --get remote.origin.url)
@@ -105,7 +105,7 @@ push: build
 run: build
 	@echo "+ $@"
 	@${MANAGER} run --name ${CONTAINER_NAME} -p ${HTTP_PORT}:${HTTP_PORT} \
-		-p ${HTTP_SECONDARY_PORT}:${HTTP_SECONDARY_PORT} \
+		-p ${HTTP_ADMIN_PORT}:${HTTP_ADMIN_PORT} \
 		-p ${GRPC_PORT}:${GRPC_PORT} \
 		-d $(CONTAINER_IMAGE):$(RELEASE)
 	@sleep 1

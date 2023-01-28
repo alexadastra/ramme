@@ -12,7 +12,7 @@
 - `NAMESPACE` - the namespace where service will be deployed to;
 - `INFRASTRUCTURE` - name of config to use while deploying (`charts/values-($INFRASTRUCTURE).yaml` will be used);
 - `HTTP_PORT`- preferred port for recieving HTTP requests;
-- `HTTP_SECONDARY_PORT` - preferred port for internal HTTP requests (docs, health- and readyness check etc.);
+- `HTTP_ADMIN_PORT` - preferred port for internal HTTP requests (docs, health- and readyness check etc.);
 - `GRPC_PORT` - preferred port for recieving gRPC requests;
 
 ## Makefile commands
